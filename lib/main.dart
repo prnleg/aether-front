@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'presentation/pages/dashboard_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'presentation/pages/main_scaffold.dart';
+import 'logic/blocs/settings_bloc.dart';
+import 'logic/blocs/settings_state.dart';
+import 'presentation/theme/app_theme.dart';
 
 void main() {
   runApp(const AetherApp());
@@ -10,18 +16,31 @@ class AetherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Aether',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E3192),
-          primary: const Color(0xFF2E3192),
-        ),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
+    return BlocProvider(
+      create: (context) => SettingsBloc(),
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, state) {
+          return MaterialApp(
+            title: 'Aether',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: state.themeMode,
+            locale: state.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('pt'),
+            ],
+            home: const MainScaffold(),
+          );
+        },
       ),
-      home: const DashboardPage(),
     );
   }
 }

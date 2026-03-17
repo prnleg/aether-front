@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
+import '../../data/models/asset_model.dart';
 
 abstract class DashboardState extends Equatable {
   const DashboardState();
   
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class DashboardInitial extends DashboardState {}
@@ -13,15 +14,17 @@ class DashboardLoading extends DashboardState {}
 
 class DashboardLoaded extends DashboardState {
   final double totalNetWorth;
-  final List<Map<String, dynamic>> assets;
+  final List<Asset> assets;
+  final List<HistoryPoint> netWorthHistory;
 
   const DashboardLoaded({
     required this.totalNetWorth,
     required this.assets,
+    required this.netWorthHistory,
   });
 
   @override
-  List<Object> get props => [totalNetWorth, assets];
+  List<Object?> get props => [totalNetWorth, assets, netWorthHistory];
 }
 
 class DashboardError extends DashboardState {
@@ -30,5 +33,5 @@ class DashboardError extends DashboardState {
   const DashboardError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }
