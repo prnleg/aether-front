@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../logic/blocs/account_bloc.dart';
-import '../../logic/blocs/account_event.dart';
-import '../../logic/blocs/account_state.dart';
+import '../../logic/blocs/account/account_bloc.dart';
+import '../../logic/blocs/account/account_event.dart';
+import '../../logic/blocs/account/account_state.dart';
+import '../../service_locator.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -28,7 +29,7 @@ class _AccountPageState extends State<AccountPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return BlocProvider(
-      create: (context) => AccountBloc()..add(AccountStarted()),
+      create: (context) => sl<AccountBloc>()..add(AccountStarted()),
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.account, style: const TextStyle(fontWeight: FontWeight.bold)),

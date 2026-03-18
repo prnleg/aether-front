@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../logic/blocs/dashboard_bloc.dart';
-import '../../logic/blocs/dashboard_event.dart';
+import '../../logic/blocs/dashboard/dashboard_bloc.dart';
+import '../../logic/blocs/dashboard/dashboard_event.dart';
+import '../../service_locator.dart';
 import 'dashboard_page.dart';
 import 'assets_page.dart';
 import 'account_page.dart';
@@ -40,7 +41,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     final l10n = AppLocalizations.of(context)!;
 
     return BlocProvider(
-      create: (context) => DashboardBloc()..add(DashboardStarted()),
+      create: (context) => sl<DashboardBloc>()..add(DashboardStarted()),
       child: Scaffold(
         body: Row(
           children: [

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../logic/blocs/dashboard_bloc.dart';
-import '../../logic/blocs/dashboard_event.dart';
-import '../../data/models/asset_model.dart';
+import '../../logic/blocs/dashboard/dashboard_bloc.dart';
+import '../../logic/blocs/dashboard/dashboard_event.dart';
+import '../../domain/models/asset_model.dart';
 
 class AddAssetPage extends StatefulWidget {
   const AddAssetPage({super.key});
@@ -29,12 +29,12 @@ class _AddAssetPageState extends State<AddAssetPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.addNewAsset, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.addNewAsset,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
@@ -56,7 +56,9 @@ class _AddAssetPageState extends State<AddAssetPage> {
                       label: l10n.assetName,
                       controller: _nameController,
                       icon: Icons.label_outline,
-                      validator: (value) => value == null || value.isEmpty ? l10n.requiredField : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? l10n.requiredField
+                          : null,
                     ),
                     const SizedBox(height: 20),
                     _buildTypeDropdown(context, l10n),
@@ -68,8 +70,12 @@ class _AddAssetPageState extends State<AddAssetPage> {
                       icon: Icons.attach_money,
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return l10n.requiredField;
-                        if (double.tryParse(value) == null) return l10n.invalidNumber;
+                        if (value == null || value.isEmpty) {
+                          return l10n.requiredField;
+                        }
+                        if (double.tryParse(value) == null) {
+                          return l10n.invalidNumber;
+                        }
                         return null;
                       },
                     ),
@@ -85,10 +91,13 @@ class _AddAssetPageState extends State<AddAssetPage> {
                     backgroundColor: const Color(0xFF2E3192),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                     elevation: 0,
                   ),
-                  child: Text(l10n.addAsset, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(l10n.addAsset,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -116,10 +125,9 @@ class _AddAssetPageState extends State<AddAssetPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.03), 
-            blurRadius: 10, 
-            offset: const Offset(0, 4)
-          ),
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4)),
         ],
       ),
       child: child,
@@ -140,7 +148,9 @@ class _AddAssetPageState extends State<AddAssetPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500)),
+        Text(label,
+            style: const TextStyle(
+                fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
@@ -151,8 +161,11 @@ class _AddAssetPageState extends State<AddAssetPage> {
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF2E3192)),
             filled: true,
             fillColor: isDark ? Colors.white10 : const Color(0xFFF5F7FA),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
         ),
       ],
@@ -166,7 +179,9 @@ class _AddAssetPageState extends State<AddAssetPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.assetType, style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500)),
+        Text(l10n.assetType,
+            style: const TextStyle(
+                fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -179,7 +194,8 @@ class _AddAssetPageState extends State<AddAssetPage> {
               value: _selectedType,
               isExpanded: true,
               dropdownColor: theme.cardColor,
-              icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF2E3192)),
+              icon: const Icon(Icons.keyboard_arrow_down,
+                  color: Color(0xFF2E3192)),
               onChanged: (value) => setState(() => _selectedType = value!),
               items: AssetType.values.map((type) {
                 return DropdownMenuItem(
@@ -204,10 +220,10 @@ class _AddAssetPageState extends State<AddAssetPage> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       context.read<DashboardBloc>().add(AddAsset(
-        name: _nameController.text,
-        type: _selectedType,
-        initialValue: double.parse(_valueController.text),
-      ));
+            name: _nameController.text,
+            type: _selectedType,
+            initialValue: double.parse(_valueController.text),
+          ));
       Navigator.pop(context);
     }
   }

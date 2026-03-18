@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../data/models/asset_model.dart';
+import '../../../domain/models/asset_model.dart';
 
 abstract class DashboardState extends Equatable {
   const DashboardState();

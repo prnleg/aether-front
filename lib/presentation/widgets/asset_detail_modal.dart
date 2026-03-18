@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../data/models/asset_model.dart';
+import '../../domain/models/asset_model.dart';
 
 class AssetDetailModal extends StatelessWidget {
   final Asset asset;
@@ -20,7 +20,6 @@ class AssetDetailModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPositive = asset.change24h >= 0;
-    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
@@ -79,7 +78,8 @@ class AssetDetailModal extends StatelessWidget {
               )
             ],
           ),
-          child: Icon(_getIconForType(asset.type), size: 40, color: const Color(0xFF2E3192)),
+          child: Icon(_getIconForType(asset.type),
+              size: 40, color: const Color(0xFF2E3192)),
         ),
         const SizedBox(height: 16),
         Text(
@@ -191,9 +191,11 @@ class AssetDetailModal extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _buildStatRow(l10n.highest30d, '\$${(asset.value * 1.1).toStringAsFixed(2)}'),
+              _buildStatRow(l10n.highest30d,
+                  '\$${(asset.value * 1.1).toStringAsFixed(2)}'),
               const Divider(height: 30),
-              _buildStatRow(l10n.lowest30d, '\$${(asset.value * 0.9).toStringAsFixed(2)}'),
+              _buildStatRow(l10n.lowest30d,
+                  '\$${(asset.value * 0.9).toStringAsFixed(2)}'),
               const Divider(height: 30),
               _buildStatRow(l10n.volatility, 'Medium'),
             ],
@@ -224,9 +226,11 @@ class AssetDetailModal extends StatelessWidget {
               backgroundColor: const Color(0xFF2E3192),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
             ),
-            child: Text(l10n.editAsset, style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(l10n.editAsset,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
         const SizedBox(width: 15),

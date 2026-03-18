@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../data/models/asset_model.dart';
+import '../../domain/models/asset_model.dart';
 
 class NetWorthGraph extends StatelessWidget {
   final List<HistoryPoint> history;
@@ -18,13 +18,13 @@ class NetWorthGraph extends StatelessWidget {
     if (history.isEmpty) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context)!;
 
-    final minX = 0.0;
+    const minX = 0.0;
     final maxX = (history.length - 1).toDouble();
-    
+
     final values = history.map((e) => e.value).toList();
     final minValue = values.reduce((a, b) => a < b ? a : b);
     final maxValue = values.reduce((a, b) => a > b ? a : b);
-    
+
     // Add some padding to Y axis
     final yPadding = (maxValue - minValue) * 0.2;
     final minY = minValue - yPadding;
@@ -109,8 +109,10 @@ class NetWorthGraph extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.lowest30d.split(' ')[0] + ' 30d', style: const TextStyle(color: Colors.white60, fontSize: 10)),
-              Text(l10n.saveChanges.split(' ')[0] == 'Save' ? 'Today' : 'Hoje', style: const TextStyle(color: Colors.white60, fontSize: 10)),
+              Text('${l10n.lowest30d.split(' ')[0]} 30d',
+                  style: const TextStyle(color: Colors.white60, fontSize: 10)),
+              Text(l10n.saveChanges.split(' ')[0] == 'Save' ? 'Today' : 'Hoje',
+                  style: const TextStyle(color: Colors.white60, fontSize: 10)),
             ],
           ),
         ],

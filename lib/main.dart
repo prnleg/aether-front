@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'presentation/pages/main_scaffold.dart';
-import 'logic/blocs/settings_bloc.dart';
-import 'logic/blocs/settings_state.dart';
+import 'logic/blocs/settings/settings_bloc.dart';
+import 'logic/blocs/settings/settings_state.dart';
 import 'presentation/theme/app_theme.dart';
+import 'service_locator.dart' as sl;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await sl.init();
   runApp(const AetherApp());
 }
 
@@ -17,7 +20,7 @@ class AetherApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SettingsBloc(),
+      create: (context) => sl.sl<SettingsBloc>(),
       child: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, state) {
           return MaterialApp(
