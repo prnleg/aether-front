@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'presentation/pages/main_scaffold.dart';
 import 'logic/blocs/settings/settings_bloc.dart';
 import 'logic/blocs/settings/settings_state.dart';
+import 'logic/blocs/auth/auth_bloc.dart';
 import 'presentation/theme/app_theme.dart';
+import 'presentation/router/app_router.dart';
 import 'service_locator.dart' as sl;
 
 void main() async {
@@ -14,16 +15,33 @@ void main() async {
   runApp(const AetherApp());
 }
 
-class AetherApp extends StatelessWidget {
+class AetherApp extends StatefulWidget {
   const AetherApp({super.key});
 
   @override
+  State<AetherApp> createState() => _AetherAppState();
+}
+
+class _AetherAppState extends State<AetherApp> {
+  late final AppRouter _appRouter;
+
+  @override
+  void initState() {
+    super.initState();
+    _appRouter = AppRouter(sl.sl<AuthBloc>());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl.sl<SettingsBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl.sl<SettingsBloc>()),
+        BlocProvider(create: (context) => sl.sl<AuthBloc>()),
+      ],
       child: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, state) {
-          return MaterialApp(
+          return MaterialApp.router(
+            routerConfig: _appRouter.router,
             title: 'Aether',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
@@ -40,7 +58,6 @@ class AetherApp extends StatelessWidget {
               Locale('en'),
               Locale('pt'),
             ],
-            home: const MainScaffold(),
           );
         },
       ),

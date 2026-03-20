@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../logic/blocs/dashboard/dashboard_event.dart';
 import '../../logic/blocs/dashboard/dashboard_state.dart';
@@ -10,7 +11,6 @@ import '../../logic/blocs/settings/settings_state.dart';
 import '../../domain/models/asset_model.dart';
 import '../widgets/net_worth_graph.dart';
 import '../widgets/asset_detail_modal.dart';
-import 'main_scaffold.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -123,8 +123,7 @@ class DashboardView extends StatelessWidget {
         const SizedBox(width: 10),
         TextButton(
           onPressed: () {
-            // Fix: Use MainScaffold context to switch tabs
-            MainScaffold.of(context)?.setSelectedIndex(1);
+            context.go('/assets');
           },
           child: Text(l10n.seeAll),
         ),

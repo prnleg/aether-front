@@ -1,44 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import '../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../logic/blocs/dashboard/dashboard_event.dart';
 import '../../service_locator.dart';
-import 'dashboard_page.dart';
-import 'assets_page.dart';
-import 'account_page.dart';
-import 'settings_page.dart';
 
-class MainScaffold extends StatefulWidget {
-  const MainScaffold({super.key});
+class MainScaffold extends StatelessWidget {
+  final Widget child;
+  const MainScaffold({super.key, required this.child});
 
-  static _MainScaffoldState? of(BuildContext context) =>
-      context.findAncestorStateOfType<_MainScaffoldState>();
-
-  @override
-  State<MainScaffold> createState() => _MainScaffoldState();
-}
-
-class _MainScaffoldState extends State<MainScaffold> {
-  int _selectedIndex = 0;
-
-  void setSelectedIndex(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  int _getSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).matchedLocation;
+    if (location.startsWith('/dashboard')) return 0;
+    if (location.startsWith('/assets')) return 1;
+    if (location.startsWith('/account')) return 2;
+    if (location.startsWith('/settings')) return 3;
+    return 0;
   }
 
-  final List<Widget> _pages = [
-    const DashboardPage(),
-    const AssetsPage(),
-    const AccountPage(),
-    const SettingsPage(),
-  ];
+  void _onDestinationSelected(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        context.go('/dashboard');
+        break;
+      case 1:
+        context.go('/assets');
+        break;
+      case 2:
+        context.go('/account');
+        break;
+      case 3:
+        context.go('/settings');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final bool isWide = MediaQuery.of(context).size.width > 800;
     final l10n = AppLocalizations.of(context)!;
+    final int selectedIndex = _getSelectedIndex(context);
 
     return BlocProvider(
       create: (context) => sl<DashboardBloc>()..add(DashboardStarted()),
@@ -49,12 +51,14 @@ class _MainScaffoldState extends State<MainScaffold> {
               SizedBox(
                 width: 110,
                 child: NavigationRail(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: setSelectedIndex,
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (index) =>
+                      _onDestinationSelected(context, index),
                   labelType: NavigationRailLabelType.all,
                   leading: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Icon(Icons.auto_awesome, size: 40, color: Color(0xFF2E3192)),
+                    child: Icon(Icons.auto_awesome,
+                        size: 40, color: Color(0xFF2E3192)),
                   ),
                   destinations: [
                     NavigationRailDestination(
@@ -81,14 +85,14 @@ class _MainScaffoldState extends State<MainScaffold> {
                 ),
               ),
             Expanded(
-              child: _pages[_selectedIndex],
+              child: child,
             ),
           ],
         ),
         bottomNavigationBar: !isWide
             ? BottomNavigationBar(
-                currentIndex: _selectedIndex,
-                onTap: setSelectedIndex,
+                currentIndex: selectedIndex,
+                onTap: (index) => _onDestinationSelected(context, index),
                 type: BottomNavigationBarType.fixed,
                 items: [
                   BottomNavigationBarItem(

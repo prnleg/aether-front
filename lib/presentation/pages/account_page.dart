@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../logic/blocs/account/account_bloc.dart';
 import '../../logic/blocs/account/account_event.dart';
 import '../../logic/blocs/account/account_state.dart';
+import '../../logic/blocs/auth/auth_bloc.dart';
+import '../../logic/blocs/auth/auth_event.dart';
 import '../../service_locator.dart';
 
 class AccountPage extends StatefulWidget {
@@ -249,10 +251,13 @@ class _AccountPageState extends State<AccountPage> {
   Widget _buildSignOutButton(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return TextButton(
-      onPressed: () {},
+      onPressed: () {
+        context.read<AuthBloc>().add(LogoutRequested());
+      },
       child: Text(
         l10n.signOut,
-        style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+        style: const TextStyle(
+            color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
       ),
     );
   }

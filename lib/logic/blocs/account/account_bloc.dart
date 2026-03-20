@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'account_event.dart';
 import 'account_state.dart';
-import '../../../domain/models/user_model.dart';
 import '../../../domain/repositories/user_repository.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
