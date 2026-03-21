@@ -1,16 +1,15 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class MockAuthRepository implements AuthRepository {
-  final FlutterSecureStorage _storage;
+  final Map<String, String> _inMemoryStorage = {};
   static const _tokenKey = 'auth_token';
 
-  MockAuthRepository(this._storage);
+  MockAuthRepository();
 
   @override
   Future<AuthStatus> getAuthStatus() async {
-    final token = await _storage.read(key: _tokenKey);
+    final token = _inMemoryStorage[_tokenKey];
     return token != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
   }
 
@@ -25,7 +24,7 @@ class MockAuthRepository implements AuthRepository {
       email: 'john.doe@example.com',
     );
     
-    await _storage.write(key: _tokenKey, value: 'mock_jwt_token');
+    _inMemoryStorage[_tokenKey] = 'mock_jwt_token';
     return user;
   }
 
@@ -37,17 +36,17 @@ class MockAuthRepository implements AuthRepository {
       name: 'John Doe',
       email: 'john.doe@example.com',
     );
-    await _storage.write(key: _tokenKey, value: 'mock_jwt_token');
+    _inMemoryStorage[_tokenKey] = 'mock_jwt_token';
     return user;
   }
 
   @override
   Future<void> logout() async {
-    await _storage.delete(key: _tokenKey);
+    _inMemoryStorage.remove(_tokenKey);
   }
 
   @override
   Future<String?> getToken() async {
-    return await _storage.read(key: _tokenKey);
+    return _inMemoryStorage[_tokenKey];
   }
 }

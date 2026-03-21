@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:aether/l10n/app_localizations.dart';
 import 'logic/blocs/settings/settings_bloc.dart';
 import 'logic/blocs/settings/settings_state.dart';
 import 'logic/blocs/auth/auth_bloc.dart';

@@ -5,6 +5,7 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.aether-app.investments</string>
+		<string>$(AppIdentifierPrefix)com.aether.aether</string>
 	</array>
 </dict>
 </plist>
