@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import 'logic/blocs/settings/settings_bloc.dart';
+import 'logic/blocs/settings/settings_event.dart';
 import 'logic/blocs/settings/settings_state.dart';
 import 'logic/blocs/auth/auth_bloc.dart';
 import 'presentation/theme/app_theme.dart';
@@ -11,6 +13,7 @@ import 'service_locator.dart' as sl;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   await sl.init();
   runApp(const AetherApp());
 }
@@ -35,7 +38,9 @@ class _AetherAppState extends State<AetherApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => sl.sl<SettingsBloc>()),
+        BlocProvider(
+          create: (context) => sl.sl<SettingsBloc>()..add(LoadSettings()),
+        ),
         BlocProvider(create: (context) => sl.sl<AuthBloc>()),
       ],
       child: BlocBuilder<SettingsBloc, SettingsState>(

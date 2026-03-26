@@ -11,7 +11,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLoginRequested);
     on<RegisterRequested>(_onRegisterRequested);
     on<LogoutRequested>(_onLogoutRequested);
-    
+
     add(AuthStatusChanged());
   }
 
@@ -21,9 +21,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final status = await _authRepository.getAuthStatus();
     if (status == AuthStatus.authenticated) {
-      emit(state.copyWith(status: AuthStatus.authenticated, isLoading: false, error: null));
+      emit(state.copyWith(
+          status: AuthStatus.authenticated, isLoading: false, error: null));
     } else {
-      emit(state.copyWith(status: AuthStatus.unauthenticated, isLoading: false, error: null));
+      emit(state.copyWith(
+          status: AuthStatus.unauthenticated, isLoading: false, error: null));
     }
   }
 
@@ -36,8 +38,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepository.login(event.email, event.password);
       add(AuthStatusChanged());
     } catch (e) {
-      print('Login error: $e');
-      emit(state.copyWith(isLoading: false, error: 'Login failed. Please check your credentials.'));
+      emit(state.copyWith(
+          isLoading: false,
+          error: 'Login failed. Please check your credentials.'));
     }
   }
 
@@ -50,8 +53,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepository.register(event.name, event.email, event.password);
       add(AuthStatusChanged());
     } catch (e) {
-      print('Register error: $e');
-      emit(state.copyWith(isLoading: false, error: 'Registration failed. Please try again.'));
+      emit(state.copyWith(
+          isLoading: false, error: 'Registration failed. Please try again.'));
     }
   }
 

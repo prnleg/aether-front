@@ -116,4 +116,31 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Número inválido';
+
+  @override
+  String get searchAssets => 'Pesquisar ativos...';
+
+  @override
+  String get noAssetsMatch => 'Nenhum ativo corresponde aos filtros';
+
+  @override
+  String get all => 'Tudo';
+
+  @override
+  String get oneWeekShort => '1S';
+
+  @override
+  String get oneMonthShort => '1M';
+
+  @override
+  String get threeMonthsShort => '3M';
+
+  @override
+  String get sixMonthsShort => '6M';
+
+  @override
+  String get oneYearShort => '1A';
+
+  @override
+  String get allShort => 'TUDO';
 }

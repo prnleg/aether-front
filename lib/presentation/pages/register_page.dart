@@ -67,18 +67,20 @@ class _RegisterPageState extends State<RegisterPage> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF2E3192).withOpacity(0.05),
+                const Color(0xFF2E3192).withValues(alpha: 0.05),
                 Colors.white,
               ],
             ),
           ),
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.auto_awesome, size: 60, color: Color(0xFF2E3192)),
+                  const Icon(Icons.auto_awesome,
+                      size: 60, color: Color(0xFF2E3192)),
                   const SizedBox(height: 16),
                   const Text(
                     'Create Account',
@@ -146,7 +148,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 )
                               : const Text(
                                   'Register',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
                         ),
                       );
@@ -194,11 +198,11 @@ class _RegisterPageState extends State<RegisterPage> {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

@@ -34,5 +34,14 @@
   "assetType": "Tipo de Ativo",
   "initialValue": "Valor Inicial ($)",
   "requiredField": "Obrigatório",
-  "invalidNumber": "Número inválido"
+  "invalidNumber": "Número inválido",
+  "searchAssets": "Pesquisar ativos...",
+  "noAssetsMatch": "Nenhum ativo corresponde aos filtros",
+  "all": "Tudo",
+  "oneWeekShort": "1S",
+  "oneMonthShort": "1M",
+  "threeMonthsShort": "3M",
+  "sixMonthsShort": "6M",
+  "oneYearShort": "1A",
+  "allShort": "TUDO"
 }

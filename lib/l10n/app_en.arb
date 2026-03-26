@@ -34,5 +34,14 @@
   "assetType": "Asset Type",
   "initialValue": "Initial Value ($)",
   "requiredField": "Required",
-  "invalidNumber": "Invalid number"
+  "invalidNumber": "Invalid number",
+  "searchAssets": "Search assets...",
+  "noAssetsMatch": "No assets match your filters",
+  "all": "All",
+  "oneWeekShort": "1W",
+  "oneMonthShort": "1M",
+  "threeMonthsShort": "3M",
+  "sixMonthsShort": "6M",
+  "oneYearShort": "1Y",
+  "allShort": "ALL"
 }

@@ -45,12 +45,14 @@ class MainScaffold extends StatelessWidget {
     return BlocProvider(
       create: (context) => sl<DashboardBloc>()..add(DashboardStarted()),
       child: Scaffold(
-        body: Row(
-          children: [
-            if (isWide)
-              SizedBox(
-                width: 110,
-                child: NavigationRail(
+        body: SafeArea(
+          bottom: false,
+          child: Row(
+            children: [
+              if (isWide)
+                SizedBox(
+                  width: 110,
+                  child: NavigationRail(
                   selectedIndex: selectedIndex,
                   onDestinationSelected: (index) =>
                       _onDestinationSelected(context, index),
@@ -88,6 +90,7 @@ class MainScaffold extends StatelessWidget {
               child: child,
             ),
           ],
+        ),
         ),
         bottomNavigationBar: !isWide
             ? BottomNavigationBar(

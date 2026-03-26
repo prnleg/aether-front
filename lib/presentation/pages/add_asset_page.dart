@@ -125,7 +125,7 @@ class _AddAssetPageState extends State<AddAssetPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
               blurRadius: 10,
               offset: const Offset(0, 4)),
         ],

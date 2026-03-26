@@ -14,7 +14,7 @@ class MockAssetRepository implements AssetRepository {
         value: 45000.50,
         type: AssetType.crypto,
         change24h: 2.5,
-        history: _generateHistory(now, 40000, 30, 0.05),
+        history: _generateHistory(now, 40000, 365, 0.05),
       ),
       Asset(
         id: '2',
@@ -22,7 +22,7 @@ class MockAssetRepository implements AssetRepository {
         value: 2400.20,
         type: AssetType.crypto,
         change24h: -1.2,
-        history: _generateHistory(now, 2500, 30, 0.04),
+        history: _generateHistory(now, 2500, 365, 0.04),
       ),
       Asset(
         id: '3',
@@ -30,7 +30,7 @@ class MockAssetRepository implements AssetRepository {
         value: 1250.75,
         type: AssetType.inventory,
         change24h: 0.5,
-        history: _generateHistory(now, 1200, 30, 0.01),
+        history: _generateHistory(now, 1200, 365, 0.01),
       ),
       Asset(
         id: '4',
@@ -38,7 +38,7 @@ class MockAssetRepository implements AssetRepository {
         value: 800.00,
         type: AssetType.collectible,
         change24h: 0.0,
-        history: _generateHistory(now, 800, 30, 0.005),
+        history: _generateHistory(now, 800, 365, 0.005),
       ),
       Asset(
         id: '5',
@@ -46,7 +46,7 @@ class MockAssetRepository implements AssetRepository {
         value: 15000.00,
         type: AssetType.collectible,
         change24h: 5.0,
-        history: _generateHistory(now, 14000, 30, 0.02),
+        history: _generateHistory(now, 14000, 365, 0.02),
       ),
       Asset(
         id: '6',
@@ -54,7 +54,7 @@ class MockAssetRepository implements AssetRepository {
         value: 12000.00,
         type: AssetType.stock,
         change24h: 0.8,
-        history: _generateHistory(now, 11500, 30, 0.015),
+        history: _generateHistory(now, 11500, 365, 0.015),
       ),
     ];
   }
@@ -66,9 +66,13 @@ class MockAssetRepository implements AssetRepository {
 
   @override
   Future<List<HistoryPoint>> getNetWorthHistory(List<Asset> assets) async {
+    if (assets.isEmpty) return [];
+    
+    final days = assets.first.history.length;
     final now = DateTime.now();
     final List<HistoryPoint> netWorthHistory = [];
-    for (int i = 0; i <= 30; i++) {
+    
+    for (int i = 0; i < days; i++) {
       double dailySum = 0;
       for (var asset in assets) {
         if (i < asset.history.length) {
@@ -76,7 +80,7 @@ class MockAssetRepository implements AssetRepository {
         }
       }
       netWorthHistory.add(HistoryPoint(
-        date: now.subtract(Duration(days: 30 - i)),
+        date: now.subtract(Duration(days: (days - 1) - i)),
         value: dailySum,
       ));
     }
@@ -89,8 +93,9 @@ class MockAssetRepository implements AssetRepository {
     double currentValue = startValue;
     for (int i = days; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
-      currentValue =
-          currentValue * (1 + (volatility * (0.5 - (1.0 * (i % 7) / 7))));
+      // More realistic random walk
+      final randomFactor = (i % 7) / 7.0 - 0.5; // range -0.5 to 0.5
+      currentValue = currentValue * (1 + (volatility * randomFactor));
       history.add(HistoryPoint(date: date, value: currentValue));
     }
     return history;

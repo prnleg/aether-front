@@ -116,4 +116,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Invalid number';
+
+  @override
+  String get searchAssets => 'Search assets...';
+
+  @override
+  String get noAssetsMatch => 'No assets match your filters';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get oneWeekShort => '1W';
+
+  @override
+  String get oneMonthShort => '1M';
+
+  @override
+  String get threeMonthsShort => '3M';
+
+  @override
+  String get sixMonthsShort => '6M';
+
+  @override
+  String get oneYearShort => '1Y';
+
+  @override
+  String get allShort => 'ALL';
 }

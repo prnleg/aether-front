@@ -1,16 +1,20 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:aether/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import '../../domain/models/asset_model.dart';
+import '../../logic/blocs/dashboard/dashboard_state.dart';
 
 class NetWorthGraph extends StatelessWidget {
   final List<HistoryPoint> history;
   final double totalAmount;
+  final TimeRange timeRange;
 
   const NetWorthGraph({
     super.key,
     required this.history,
     required this.totalAmount,
+    this.timeRange = TimeRange.oneMonth,
   });
 
   @override
@@ -26,7 +30,8 @@ class NetWorthGraph extends StatelessWidget {
     final maxValue = values.reduce((a, b) => a > b ? a : b);
 
     // Add some padding to Y axis
-    final yPadding = (maxValue - minValue) * 0.2;
+    final yPadding =
+        (maxValue - minValue) == 0 ? 10.0 : (maxValue - minValue) * 0.2;
     final minY = minValue - yPadding;
     final maxY = maxValue + yPadding;
 
@@ -41,7 +46,7 @@ class NetWorthGraph extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2E3192).withOpacity(0.3),
+            color: const Color(0xFF2E3192).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -69,9 +74,28 @@ class NetWorthGraph extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           SizedBox(
-            height: 120,
+            height: 150,
             child: LineChart(
               LineChartData(
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipColor: (touchedSpot) =>
+                        Colors.white.withValues(alpha: 0.8),
+                    getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                      return touchedSpots.map((LineBarSpot touchedSpot) {
+                        final date = history[touchedSpot.x.toInt()].date;
+                        final value = touchedSpot.y;
+                        return LineTooltipItem(
+                          '${DateFormat('dd MM').format(date)}\n\$${value.toStringAsFixed(2)}',
+                          const TextStyle(
+                              color: Color(0xFF2E3192),
+                              fontWeight: FontWeight.bold),
+                        );
+                      }).toList();
+                    },
+                  ),
+                  handleBuiltInTouches: true,
+                ),
                 gridData: const FlGridData(show: false),
                 titlesData: const FlTitlesData(show: false),
                 borderData: FlBorderData(show: false),
@@ -93,8 +117,8 @@ class NetWorthGraph extends StatelessWidget {
                       show: true,
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.3),
-                          Colors.white.withOpacity(0.0),
+                          Colors.white.withValues(alpha: 0.3),
+                          Colors.white.withValues(alpha: 0.0),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -109,10 +133,14 @@ class NetWorthGraph extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${l10n.lowest30d.split(' ')[0]} 30d',
-                  style: const TextStyle(color: Colors.white60, fontSize: 10)),
-              Text(l10n.saveChanges.split(' ')[0] == 'Save' ? 'Today' : 'Hoje',
-                  style: const TextStyle(color: Colors.white60, fontSize: 10)),
+              Text(
+                DateFormat('dd MM, yyyy').format(history.first.date),
+                style: const TextStyle(color: Colors.white60, fontSize: 10),
+              ),
+              Text(
+                DateFormat('dd MM, yyyy').format(history.last.date),
+                style: const TextStyle(color: Colors.white60, fontSize: 10),
+              ),
             ],
           ),
         ],

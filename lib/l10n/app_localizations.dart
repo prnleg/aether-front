@@ -313,6 +313,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid number'**
   String get invalidNumber;
+
+  /// No description provided for @searchAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Search assets...'**
+  String get searchAssets;
+
+  /// No description provided for @noAssetsMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No assets match your filters'**
+  String get noAssetsMatch;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @oneWeekShort.
+  ///
+  /// In en, this message translates to:
+  /// **'1W'**
+  String get oneWeekShort;
+
+  /// No description provided for @oneMonthShort.
+  ///
+  /// In en, this message translates to:
+  /// **'1M'**
+  String get oneMonthShort;
+
+  /// No description provided for @threeMonthsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'3M'**
+  String get threeMonthsShort;
+
+  /// No description provided for @sixMonthsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'6M'**
+  String get sixMonthsShort;
+
+  /// No description provided for @oneYearShort.
+  ///
+  /// In en, this message translates to:
+  /// **'1Y'**
+  String get oneYearShort;
+
+  /// No description provided for @allShort.
+  ///
+  /// In en, this message translates to:
+  /// **'ALL'**
+  String get allShort;
 }
 
 class _AppLocalizationsDelegate

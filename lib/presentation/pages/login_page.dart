@@ -32,6 +32,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.error != null) {
@@ -47,8 +51,8 @@ class _LoginPageState extends State<LoginPage> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF2E3192).withOpacity(0.05),
-                Colors.white,
+                colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.05),
+                theme.scaffoldBackgroundColor,
               ],
             ),
           ),
@@ -58,14 +62,14 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.auto_awesome, size: 80, color: Color(0xFF2E3192)),
+                  Icon(Icons.auto_awesome, size: 80, color: colorScheme.primary),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Aether',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2E3192),
+                      color: colorScheme.primary,
                     ),
                   ),
                   const Text(
@@ -74,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 48),
                   _buildTextField(
+                    context: context,
                     controller: _emailController,
                     label: 'Email Address',
                     icon: Icons.email_outlined,
@@ -81,6 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(
+                    context: context,
                     controller: _passwordController,
                     label: 'Password',
                     icon: Icons.lock_outline,
@@ -103,25 +109,27 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: state.isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2E3192),
-                            foregroundColor: Colors.white,
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
                             elevation: 0,
                           ),
                           child: state.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   height: 24,
                                   width: 24,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: colorScheme.onPrimary,
                                     strokeWidth: 2,
                                   ),
                                 )
                               : const Text(
                                   'Login',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
                         ),
                       );
@@ -151,32 +159,37 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required IconData icon,
     bool isPassword = false,
     TextInputType? keyboardType,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return TextField(
       controller: controller,
       obscureText: isPassword,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFF2E3192)),
+        prefixIcon: Icon(icon, color: colorScheme.primary),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF2E3192)),
+          borderSide: BorderSide(color: colorScheme.primary),
         ),
       ),
     );

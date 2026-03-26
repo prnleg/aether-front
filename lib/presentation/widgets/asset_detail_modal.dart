@@ -73,7 +73,7 @@ class AssetDetailModal extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
               )
             ],
@@ -133,7 +133,7 @@ class AssetDetailModal extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
           )
         ],
@@ -159,8 +159,10 @@ class AssetDetailModal extends StatelessWidget {
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    (isPositive ? Colors.green : Colors.red).withOpacity(0.2),
-                    (isPositive ? Colors.green : Colors.red).withOpacity(0.0),
+                    (isPositive ? Colors.green : Colors.red)
+                        .withValues(alpha: 0.2),
+                    (isPositive ? Colors.green : Colors.red)
+                        .withValues(alpha: 0.0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -236,7 +238,7 @@ class AssetDetailModal extends StatelessWidget {
         const SizedBox(width: 15),
         Container(
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: IconButton(

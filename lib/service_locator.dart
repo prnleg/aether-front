@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'domain/repositories/asset_repository.dart';
 import 'domain/repositories/user_repository.dart';
 import 'domain/repositories/auth_repository.dart';
+import 'domain/repositories/settings_repository.dart';
 import 'data/repositories/mock_asset_repository.dart';
 import 'data/repositories/mock_user_repository.dart';
 import 'data/repositories/mock_auth_repository.dart';
@@ -14,6 +15,10 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   // Repositories
+  final settingsRepository = HiveSettingsRepository();
+  await settingsRepository.init();
+  sl.registerLazySingleton<SettingsRepository>(() => settingsRepository);
+
   sl.registerLazySingleton<AssetRepository>(() => MockAssetRepository());
   sl.registerLazySingleton<UserRepository>(() => MockUserRepository());
   sl.registerLazySingleton<AuthRepository>(() => MockAuthRepository());
@@ -21,6 +26,6 @@ Future<void> init() async {
   // Blocs
   sl.registerFactory(() => DashboardBloc(sl()));
   sl.registerFactory(() => AccountBloc(sl()));
-  sl.registerLazySingleton(() => SettingsBloc());
+  sl.registerLazySingleton(() => SettingsBloc(sl()));
   sl.registerLazySingleton(() => AuthBloc(sl()));
 }
