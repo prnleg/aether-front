@@ -2,49 +2,81 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import '../../domain/models/asset_model.dart';
+import 'dart:math' as math;
+import 'dart:ui';
 
 class AssetDetailModal extends StatelessWidget {
   final Asset asset;
+  final bool isFromOpenContainer;
 
-  const AssetDetailModal({super.key, required this.asset});
+  const AssetDetailModal({
+    super.key,
+    required this.asset,
+    this.isFromOpenContainer = true,
+  });
 
   static Future<void> show(BuildContext context, Asset asset) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AssetDetailModal(asset: asset),
+      builder: (context) => AssetDetailModal(asset: asset, isFromOpenContainer: false),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final isPositive = asset.change24h >= 0;
-
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      child: Column(
-        children: [
-          _buildHandle(),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              children: [
-                _buildHeader(context, isPositive),
-                const SizedBox(height: 30),
-                _buildGraph(context, isPositive),
-                const SizedBox(height: 30),
-                _buildStats(context),
-                const SizedBox(height: 30),
-                _buildActionButtons(context),
-              ],
+    final content = Column(
+      children: [
+        if (!isFromOpenContainer) _buildHandle(),
+        if (isFromOpenContainer)
+          AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
-        ],
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            children: [
+              _buildHeader(context, isPositive),
+              const SizedBox(height: 30),
+              _buildGraph(context, isPositive),
+              const SizedBox(height: 30),
+              _buildDeepDiveGrid(context),
+              const SizedBox(height: 30),
+              _buildHistoricalTimeline(context),
+              const SizedBox(height: 30),
+              _buildActionButtons(context),
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    if (isFromOpenContainer) {
+      return Scaffold(
+        body: SafeArea(child: content),
+      );
+    }
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: content,
+        ),
       ),
     );
   }
@@ -175,44 +207,221 @@ class AssetDetailModal extends StatelessWidget {
     );
   }
 
-  Widget _buildStats(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildDeepDiveGrid(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.portfolioStats,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        const Text(
+          'Deep Dive Analysis',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardTheme.color ?? Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            children: [
-              _buildStatRow(l10n.highest30d,
-                  '\$${(asset.value * 1.1).toStringAsFixed(2)}'),
-              const Divider(height: 30),
-              _buildStatRow(l10n.lowest30d,
-                  '\$${(asset.value * 0.9).toStringAsFixed(2)}'),
-              const Divider(height: 30),
-              _buildStatRow(l10n.volatility, 'Medium'),
-            ],
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: _buildVolatilityGauge(context),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              flex: 1,
+              child: _buildCorrelationList(context),
+            ),
+          ],
         ),
       ],
     );
   }
 
-  Widget _buildStatRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildVolatilityGauge(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    // Mock volatility value
+    final double volatility = 0.65; // 0.0 to 1.0
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ??
+            (isDarkMode ? Colors.white10 : Colors.white),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          const Text('Volatility Index',
+              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 80,
+            width: 80,
+            child: CustomPaint(
+              painter: GaugePainter(
+                value: volatility,
+                color: volatility > 0.7
+                    ? Colors.red
+                    : (volatility > 0.4 ? Colors.orange : Colors.green),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            volatility > 0.7 ? 'High' : (volatility > 0.4 ? 'Medium' : 'Low'),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCorrelationList(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final correlations = [
+      {'name': 'Bitcoin', 'value': 0.85},
+      {'name': 'S&P 500', 'value': 0.42},
+      {'name': 'Gold', 'value': -0.15},
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ??
+            (isDarkMode ? Colors.white10 : Colors.white),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Correlations',
+              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 10),
+          ...correlations.map((corr) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(corr['name'] as String,
+                        style: const TextStyle(fontSize: 11)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: (corr['value'] as double) > 0
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.red.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        (corr['value'] as double).toStringAsFixed(2),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: (corr['value'] as double) > 0
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoricalTimeline(BuildContext context) {
+    final milestones = [
+      {
+        'date': 'Mar 15, 2026',
+        'event': 'Asset Acquisition',
+        'price': '\$${(asset.value * 0.8).toStringAsFixed(2)}',
+        'icon': Icons.shopping_bag_outlined
+      },
+      {
+        'date': 'Feb 10, 2026',
+        'event': 'All-Time High',
+        'price': '\$${(asset.value * 1.4).toStringAsFixed(2)}',
+        'icon': Icons.trending_up
+      },
+      {
+        'date': 'Jan 01, 2026',
+        'event': 'Year Start',
+        'price': '\$${(asset.value * 0.95).toStringAsFixed(2)}',
+        'icon': Icons.calendar_today
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const Text(
+          'Historical Journey',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 15),
+        ...milestones.asMap().entries.map((entry) {
+          final index = entry.key;
+          final milestone = entry.value;
+          final isLast = index == milestones.length - 1;
+
+          return IntrinsicHeight(
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2E3192).withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(milestone['icon'] as IconData,
+                          size: 16, color: const Color(0xFF2E3192)),
+                    ),
+                    if (!isLast)
+                      Expanded(
+                        child: Container(
+                          width: 2,
+                          color: Colors.grey[300],
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(milestone['date'] as String,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey)),
+                        Text(milestone['event'] as String,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Price: ${milestone['price']}',
+                            style: const TextStyle(
+                                fontSize: 13, color: Colors.blueGrey)),
+                        if (milestone['event'] == 'All-Time High')
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Text(
+                              'What if you sold here? +\$${(asset.value * 0.4).toStringAsFixed(2)} extra',
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.orange,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ],
     );
   }
@@ -264,4 +473,58 @@ class AssetDetailModal extends StatelessWidget {
         return Icons.money;
     }
   }
+}
+
+class GaugePainter extends CustomPainter {
+  final double value; // 0.0 to 1.0
+  final Color color;
+
+  GaugePainter({required this.value, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+    const startAngle = math.pi * 0.8;
+    const sweepAngle = math.pi * 1.4;
+
+    final backgroundPaint = Paint()
+      ..color = Colors.grey[300]!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle,
+        sweepAngle, false, backgroundPaint);
+
+    final progressPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle,
+        sweepAngle * value, false, progressPaint);
+
+    // Draw needle
+    final needleAngle = startAngle + (sweepAngle * value);
+    final needlePaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill;
+
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(needleAngle);
+    final path = Path()
+      ..moveTo(0, -4)
+      ..lineTo(radius - 10, 0)
+      ..lineTo(0, 4)
+      ..close();
+    canvas.drawPath(path, needlePaint);
+    canvas.drawCircle(Offset.zero, 5, needlePaint);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
