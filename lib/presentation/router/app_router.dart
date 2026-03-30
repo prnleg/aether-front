@@ -4,17 +4,49 @@ import 'package:go_router/go_router.dart';
 import '../../logic/blocs/auth/auth_bloc.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../pages/main_scaffold.dart';
-import '../pages/dashboard_page.dart';
-import '../pages/assets_page.dart';
-import '../pages/account_page.dart';
-import '../pages/settings_page.dart';
-import '../pages/login_page.dart';
-import '../pages/register_page.dart';
+import '../pages/main/dashboard_page.dart';
+import '../pages/main/assets_page.dart';
+import '../pages/main/account_page.dart';
+import '../pages/main/settings_page.dart';
+import '../pages/auth/login_page.dart';
+import '../pages/auth/register_page.dart';
 
 class AppRouter {
   final AuthBloc authBloc;
+  static int _previousIndex = 0;
 
   AppRouter(this.authBloc);
+
+  static int _getSelectedIndex(String location) {
+    if (location.startsWith('/dashboard')) return 0;
+    if (location.startsWith('/assets')) return 1;
+    if (location.startsWith('/account')) return 2;
+    if (location.startsWith('/settings')) return 3;
+    return 0;
+  }
+
+  static Page<dynamic> _buildPageWithTransition(
+      BuildContext context, GoRouterState state, Widget child) {
+    final int newIndex = _getSelectedIndex(state.matchedLocation);
+    final bool isReverse = newIndex < _previousIndex;
+    _previousIndex = newIndex;
+
+    return CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: animation.drive(
+            Tween<Offset>(
+              begin: Offset(isReverse ? -1.0 : 1.0, 0.0),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.easeInOut)),
+          ),
+          child: child,
+        );
+      },
+    );
+  }
 
   late final router = GoRouter(
     initialLocation: '/dashboard',
@@ -49,19 +81,35 @@ class AppRouter {
         routes: [
           GoRoute(
             path: '/dashboard',
-            builder: (context, state) => const DashboardPage(),
+            pageBuilder: (context, state) => _buildPageWithTransition(
+              context,
+              state,
+              const DashboardPage(),
+            ),
           ),
           GoRoute(
             path: '/assets',
-            builder: (context, state) => const AssetsPage(),
+            pageBuilder: (context, state) => _buildPageWithTransition(
+              context,
+              state,
+              const AssetsPage(),
+            ),
           ),
           GoRoute(
             path: '/account',
-            builder: (context, state) => const AccountPage(),
+            pageBuilder: (context, state) => _buildPageWithTransition(
+              context,
+              state,
+              const AccountPage(),
+            ),
           ),
           GoRoute(
             path: '/settings',
-            builder: (context, state) => const SettingsPage(),
+            pageBuilder: (context, state) => _buildPageWithTransition(
+              context,
+              state,
+              const SettingsPage(),
+            ),
           ),
         ],
       ),

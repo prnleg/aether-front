@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
-import '../../logic/blocs/dashboard/dashboard_bloc.dart';
-import '../../logic/blocs/dashboard/dashboard_state.dart';
-import '../../domain/models/asset_model.dart';
-import '../widgets/asset_detail_modal.dart';
-import 'add_asset_page.dart';
+import '../../../logic/blocs/dashboard/dashboard_bloc.dart';
+import '../../../logic/blocs/dashboard/dashboard_state.dart';
+import '../../../domain/models/asset_model.dart';
+import '../../widgets/asset_detail_modal.dart';
+import '../assets/add_asset_page.dart';
 
 class AssetsPage extends StatefulWidget {
   const AssetsPage({super.key});

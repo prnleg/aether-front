@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
-import '../../logic/blocs/account/account_bloc.dart';
-import '../../logic/blocs/account/account_event.dart';
-import '../../logic/blocs/account/account_state.dart';
-import '../../logic/blocs/auth/auth_bloc.dart';
-import '../../logic/blocs/auth/auth_event.dart';
-import '../../service_locator.dart';
+import '../../../logic/blocs/account/account_bloc.dart';
+import '../../../logic/blocs/account/account_event.dart';
+import '../../../logic/blocs/account/account_state.dart';
+import '../../../logic/blocs/auth/auth_bloc.dart';
+import '../../../logic/blocs/auth/auth_event.dart';
+import '../../../service_locator.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});

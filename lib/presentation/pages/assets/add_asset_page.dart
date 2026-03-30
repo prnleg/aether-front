@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
-import '../../logic/blocs/dashboard/dashboard_bloc.dart';
-import '../../logic/blocs/dashboard/dashboard_event.dart';
-import '../../domain/models/asset_model.dart';
+import '../../../logic/blocs/dashboard/dashboard_bloc.dart';
+import '../../../logic/blocs/dashboard/dashboard_event.dart';
+import '../../../domain/models/asset_model.dart';
 
 class AddAssetPage extends StatefulWidget {
   const AddAssetPage({super.key});
