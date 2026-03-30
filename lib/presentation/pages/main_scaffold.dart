@@ -41,56 +41,63 @@ class MainScaffold extends StatelessWidget {
     final bool isWide = MediaQuery.of(context).size.width > 800;
     final l10n = AppLocalizations.of(context)!;
     final int selectedIndex = _getSelectedIndex(context);
+    final bool isMacOS = Theme.of(context).platform == TargetPlatform.macOS;
 
     return BlocProvider(
       create: (context) => sl<DashboardBloc>()..add(DashboardStarted()),
       child: Scaffold(
         body: SafeArea(
+          top: true,
           bottom: false,
+          minimum: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
           child: Row(
             children: [
               if (isWide)
                 SizedBox(
                   width: 110,
                   child: NavigationRail(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (index) =>
-                      _onDestinationSelected(context, index),
-                  labelType: NavigationRailLabelType.all,
-                  leading: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Icon(Icons.auto_awesome,
-                        size: 40, color: Color(0xFF2E3192)),
+                    selectedIndex: selectedIndex,
+                    onDestinationSelected: (index) =>
+                        _onDestinationSelected(context, index),
+                    labelType: NavigationRailLabelType.all,
+                    leading: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Icon(Icons.auto_awesome,
+                          size: 40, color: Color(0xFF2E3192)),
+                    ),
+                    destinations: [
+                      NavigationRailDestination(
+                        icon: const Icon(Icons.dashboard_outlined),
+                        selectedIcon: const Icon(Icons.dashboard),
+                        label: Text(l10n.dashboard),
+                      ),
+                      NavigationRailDestination(
+                        icon: const Icon(Icons.account_balance_wallet_outlined),
+                        selectedIcon: const Icon(Icons.account_balance_wallet),
+                        label: Text(l10n.assets),
+                      ),
+                      NavigationRailDestination(
+                        icon: const Icon(Icons.person_outline),
+                        selectedIcon: const Icon(Icons.person),
+                        label: Text(l10n.account),
+                      ),
+                      NavigationRailDestination(
+                        icon: const Icon(Icons.settings_outlined),
+                        selectedIcon: const Icon(Icons.settings),
+                        label: Text(l10n.settings),
+                      ),
+                    ],
                   ),
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.dashboard_outlined),
-                      selectedIcon: const Icon(Icons.dashboard),
-                      label: Text(l10n.dashboard),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.account_balance_wallet_outlined),
-                      selectedIcon: const Icon(Icons.account_balance_wallet),
-                      label: Text(l10n.assets),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.person_outline),
-                      selectedIcon: const Icon(Icons.person),
-                      label: Text(l10n.account),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.settings_outlined),
-                      selectedIcon: const Icon(Icons.settings),
-                      label: Text(l10n.settings),
-                    ),
-                  ],
+                ),
+              Expanded(
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: child,
                 ),
               ),
-            Expanded(
-              child: child,
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
         bottomNavigationBar: !isWide
             ? BottomNavigationBar(
