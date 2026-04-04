@@ -4,7 +4,6 @@ import '../../domain/repositories/asset_repository.dart';
 class MockAssetRepository implements AssetRepository {
   @override
   Future<List<Asset>> getAssets() async {
-    await Future.delayed(const Duration(milliseconds: 800));
     final now = DateTime.now();
 
     return [

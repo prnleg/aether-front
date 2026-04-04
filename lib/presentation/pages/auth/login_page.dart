@@ -46,28 +46,33 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Scaffold(
-        body: SafeArea(
-          top: true,
-          bottom: false,
-          minimum: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.05),
-                  theme.scaffoldBackgroundColor,
-                ],
-              ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.05),
+                theme.scaffoldBackgroundColor,
+              ],
             ),
+          ),
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            minimum: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(32.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.auto_awesome, size: 80, color: colorScheme.primary),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 80,
+                      width: 80,
+                      // color: colorScheme.primary, // Optional: keep primary color if logo is monochromatic
+                    ),
                     const SizedBox(height: 24),
                     Text(
                       'Aether',

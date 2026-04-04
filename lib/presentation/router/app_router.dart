@@ -6,6 +6,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../pages/main_scaffold.dart';
 import '../pages/main/dashboard_page.dart';
 import '../pages/main/assets_page.dart';
+import '../pages/main/playground_page.dart';
 import '../pages/main/account_page.dart';
 import '../pages/main/settings_page.dart';
 import '../pages/auth/login_page.dart';
@@ -20,8 +21,9 @@ class AppRouter {
   static int _getSelectedIndex(String location) {
     if (location.startsWith('/dashboard')) return 0;
     if (location.startsWith('/assets')) return 1;
-    if (location.startsWith('/account')) return 2;
-    if (location.startsWith('/settings')) return 3;
+    if (location.startsWith('/playground')) return 2;
+    if (location.startsWith('/account')) return 3;
+    if (location.startsWith('/settings')) return 4;
     return 0;
   }
 
@@ -93,6 +95,14 @@ class AppRouter {
               context,
               state,
               const AssetsPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/playground',
+            pageBuilder: (context, state) => _buildPageWithTransition(
+              context,
+              state,
+              const PlaygroundPage(),
             ),
           ),
           GoRoute(

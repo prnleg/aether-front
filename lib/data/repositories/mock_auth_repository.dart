@@ -15,8 +15,6 @@ class MockAuthRepository implements AuthRepository {
 
   @override
   Future<UserModel> login(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
-    
     // Simulating a successful login
     const user = UserModel(
       id: '1',
@@ -30,7 +28,6 @@ class MockAuthRepository implements AuthRepository {
 
   @override
   Future<UserModel> register(String name, String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
     const user = UserModel(
       id: '1',
       name: 'John Doe',

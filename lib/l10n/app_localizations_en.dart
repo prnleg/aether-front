@@ -12,6 +12,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboard => 'Dashboard';
 
   @override
+  String get playground => 'Playground';
+
+  @override
+  String get whatIfSimulator => 'What-If Simulator';
+
+  @override
+  String get simulatorDesc =>
+      'Test hypothetical portfolio changes and see projected impact.';
+
+  @override
+  String get scenarioParameters => 'Scenario Parameters';
+
+  @override
+  String get sellSkins => 'Sell CS:GO Skins';
+
+  @override
+  String get buyCrypto => 'Buy Crypto (BTC/ETH)';
+
+  @override
+  String get simulationSaved => 'Simulation saved to scenarios.';
+
+  @override
+  String get saveScenario => 'Save Scenario';
+
+  @override
+  String get projectedROI => 'Projected 12-Month ROI';
+
+  @override
+  String get estimatedImpact => 'Estimated +\$12,450.00';
+
+  @override
   String get assets => 'Assets';
 
   @override

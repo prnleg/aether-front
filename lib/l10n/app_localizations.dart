@@ -104,6 +104,66 @@ abstract class AppLocalizations {
   /// **'Dashboard'**
   String get dashboard;
 
+  /// No description provided for @playground.
+  ///
+  /// In en, this message translates to:
+  /// **'Playground'**
+  String get playground;
+
+  /// No description provided for @whatIfSimulator.
+  ///
+  /// In en, this message translates to:
+  /// **'What-If Simulator'**
+  String get whatIfSimulator;
+
+  /// No description provided for @simulatorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Test hypothetical portfolio changes and see projected impact.'**
+  String get simulatorDesc;
+
+  /// No description provided for @scenarioParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenario Parameters'**
+  String get scenarioParameters;
+
+  /// No description provided for @sellSkins.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell CS:GO Skins'**
+  String get sellSkins;
+
+  /// No description provided for @buyCrypto.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Crypto (BTC/ETH)'**
+  String get buyCrypto;
+
+  /// No description provided for @simulationSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulation saved to scenarios.'**
+  String get simulationSaved;
+
+  /// No description provided for @saveScenario.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Scenario'**
+  String get saveScenario;
+
+  /// No description provided for @projectedROI.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected 12-Month ROI'**
+  String get projectedROI;
+
+  /// No description provided for @estimatedImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated +\$12,450.00'**
+  String get estimatedImpact;
+
   /// No description provided for @assets.
   ///
   /// In en, this message translates to:

@@ -45,6 +45,8 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final bool isMacOS = theme.platform == TargetPlatform.macOS;
 
     return BlocListener<AuthBloc, AuthState>(
@@ -55,30 +57,31 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         }
       },
-      child: SafeArea(
-        top: isMacOS,
-        bottom: false,
-        minimum: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Color(0xFF2E3192)),
-              onPressed: () => context.pop(),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: colorScheme.primary),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.primary.withValues(alpha: isDark ? 0.2 : 0.05),
+                theme.scaffoldBackgroundColor,
+              ],
             ),
           ),
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF2E3192).withValues(alpha: 0.05),
-                  Colors.white,
-                ],
-              ),
-            ),
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            minimum: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
             child: Center(
               child: SingleChildScrollView(
                 padding:
@@ -86,15 +89,19 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.auto_awesome,
-                        size: 60, color: Color(0xFF2E3192)),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 60,
+                      width: 60,
+                      // color: colorScheme.primary, // Optional: keep primary color if logo is monochromatic
+                    ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Create Account',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2E3192),
+                        color: colorScheme.primary,
                       ),
                     ),
                     const Text(
@@ -103,12 +110,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 32),
                     _buildTextField(
+                      context: context,
                       controller: _nameController,
                       label: 'Full Name',
                       icon: Icons.person_outline,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
+                      context: context,
                       controller: _emailController,
                       label: 'Email Address',
                       icon: Icons.email_outlined,
@@ -116,6 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
+                      context: context,
                       controller: _passwordController,
                       label: 'Password',
                       icon: Icons.lock_outline,
@@ -123,6 +133,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
+                      context: context,
                       controller: _confirmPasswordController,
                       label: 'Confirm Password',
                       icon: Icons.lock_reset,
@@ -137,19 +148,19 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: ElevatedButton(
                             onPressed: state.isLoading ? null : _handleRegister,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2E3192),
-                              foregroundColor: Colors.white,
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               elevation: 0,
                             ),
                             child: state.isLoading
-                                ? const SizedBox(
+                                ? SizedBox(
                                     height: 24,
                                     width: 24,
                                     child: CircularProgressIndicator(
-                                      color: Colors.white,
+                                      color: colorScheme.onPrimary,
                                       strokeWidth: 2,
                                     ),
                                   )
@@ -189,21 +200,26 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required IconData icon,
     bool isPassword = false,
     TextInputType? keyboardType,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return TextField(
       controller: controller,
       obscureText: isPassword,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFF2E3192)),
+        prefixIcon: Icon(icon, color: colorScheme.primary),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
@@ -214,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF2E3192)),
+          borderSide: BorderSide(color: colorScheme.primary),
         ),
       ),
     );

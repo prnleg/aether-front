@@ -14,8 +14,9 @@ class MainScaffold extends StatelessWidget {
     final String location = GoRouterState.of(context).matchedLocation;
     if (location.startsWith('/dashboard')) return 0;
     if (location.startsWith('/assets')) return 1;
-    if (location.startsWith('/account')) return 2;
-    if (location.startsWith('/settings')) return 3;
+    if (location.startsWith('/playground')) return 2;
+    if (location.startsWith('/account')) return 3;
+    if (location.startsWith('/settings')) return 4;
     return 0;
   }
 
@@ -28,9 +29,12 @@ class MainScaffold extends StatelessWidget {
         context.go('/assets');
         break;
       case 2:
-        context.go('/account');
+        context.go('/playground');
         break;
       case 3:
+        context.go('/account');
+        break;
+      case 4:
         context.go('/settings');
         break;
     }
@@ -60,10 +64,14 @@ class MainScaffold extends StatelessWidget {
                     onDestinationSelected: (index) =>
                         _onDestinationSelected(context, index),
                     labelType: NavigationRailLabelType.all,
-                    leading: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Icon(Icons.auto_awesome,
-                          size: 40, color: Color(0xFF2E3192)),
+                    leading: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 40,
+                        width: 40,
+                        color: const Color(0xFF2E3192), // Keep the same brand color
+                      ),
                     ),
                     destinations: [
                       NavigationRailDestination(
@@ -75,6 +83,11 @@ class MainScaffold extends StatelessWidget {
                         icon: const Icon(Icons.account_balance_wallet_outlined),
                         selectedIcon: const Icon(Icons.account_balance_wallet),
                         label: Text(l10n.assets),
+                      ),
+                      NavigationRailDestination(
+                        icon: const Icon(Icons.science_outlined),
+                        selectedIcon: const Icon(Icons.science),
+                        label: Text(l10n.playground),
                       ),
                       NavigationRailDestination(
                         icon: const Icon(Icons.person_outline),
@@ -114,6 +127,11 @@ class MainScaffold extends StatelessWidget {
                     icon: const Icon(Icons.account_balance_wallet_outlined),
                     activeIcon: const Icon(Icons.account_balance_wallet),
                     label: l10n.assets,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.science_outlined),
+                    activeIcon: const Icon(Icons.science),
+                    label: l10n.playground,
                   ),
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.person_outline),
