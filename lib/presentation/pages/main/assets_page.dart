@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import '../../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../../logic/blocs/dashboard/dashboard_state.dart';
+import '../../../logic/blocs/discovery/discovery_bloc.dart';
+import '../../../service_locator.dart';
 import '../../../domain/models/asset_model.dart';
 import '../../widgets/asset_detail_modal.dart';
 import '../assets/add_asset_page.dart';
+import 'discovery_hub_page.dart';
 
 class AssetsPage extends StatefulWidget {
   const AssetsPage({super.key});
@@ -33,6 +36,22 @@ class _AssetsPageState extends State<AssetsPage> {
       appBar: AppBar(
         title: Text(l10n.assets,
             style: const TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.explore_outlined),
+            tooltip: 'Discovery Hub',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (context) => sl<DiscoveryBloc>(),
+                  child: const DiscoveryHubPage(),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: BlocBuilder<DashboardBloc, DashboardState>(
         builder: (context, state) {

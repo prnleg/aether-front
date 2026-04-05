@@ -7,20 +7,26 @@ import 'dart:ui';
 
 class AssetDetailModal extends StatelessWidget {
   final Asset asset;
+  final double? totalNetWorth;
   final bool isFromOpenContainer;
 
   const AssetDetailModal({
     super.key,
     required this.asset,
+    this.totalNetWorth,
     this.isFromOpenContainer = true,
   });
 
-  static Future<void> show(BuildContext context, Asset asset) {
+  static Future<void> show(BuildContext context, Asset asset, {double? totalNetWorth}) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AssetDetailModal(asset: asset, isFromOpenContainer: false),
+      builder: (context) => AssetDetailModal(
+        asset: asset, 
+        totalNetWorth: totalNetWorth,
+        isFromOpenContainer: false
+      ),
     );
   }
 
@@ -47,6 +53,10 @@ class AssetDetailModal extends StatelessWidget {
               const SizedBox(height: 30),
               _buildGraph(context, isPositive),
               const SizedBox(height: 30),
+              if (totalNetWorth != null) ...[
+                _buildPortfolioWeighting(context),
+                const SizedBox(height: 30),
+              ],
               _buildDeepDiveGrid(context),
               const SizedBox(height: 30),
               _buildHistoricalTimeline(context),
@@ -207,6 +217,79 @@ class AssetDetailModal extends StatelessWidget {
     );
   }
 
+  Widget _buildPortfolioWeighting(BuildContext context) {
+    final weight = (asset.value / (totalNetWorth ?? 1)) * 100;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ?? (isDarkMode ? Colors.white10 : Colors.white),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            height: 100,
+            width: 100,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 0,
+                centerSpaceRadius: 35,
+                sections: [
+                  PieChartSectionData(
+                    color: const Color(0xFF2E3192),
+                    value: weight,
+                    title: '',
+                    radius: 12,
+                  ),
+                  PieChartSectionData(
+                    color: Colors.grey.withValues(alpha: 0.1),
+                    value: 100 - weight,
+                    title: '',
+                    radius: 10,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Portfolio Weight',
+                  style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${weight.toStringAsFixed(1)}%',
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  weight > 50 ? 'High Concentration Risk' : (weight > 20 ? 'Moderate Exposure' : 'Well Diversified'),
+                  style: TextStyle(
+                    fontSize: 12, 
+                    color: weight > 50 ? Colors.red : (weight > 20 ? Colors.orange : Colors.green),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDeepDiveGrid(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,11 +358,7 @@ class AssetDetailModal extends StatelessWidget {
 
   Widget _buildCorrelationList(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final correlations = [
-      {'name': 'Bitcoin', 'value': 0.85},
-      {'name': 'S&P 500', 'value': 0.42},
-      {'name': 'Gold', 'value': -0.15},
-    ];
+    final correlations = asset.correlations;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -294,62 +373,47 @@ class AssetDetailModal extends StatelessWidget {
           const Text('Correlations',
               style: TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 10),
-          ...correlations.map((corr) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(corr['name'] as String,
-                        style: const TextStyle(fontSize: 11)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: (corr['value'] as double) > 0
-                            ? Colors.green.withValues(alpha: 0.1)
-                            : Colors.red.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        (corr['value'] as double).toStringAsFixed(2),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: (corr['value'] as double) > 0
-                              ? Colors.green
-                              : Colors.red,
+          if (correlations.isEmpty)
+            const Text('No correlations available',
+                style: TextStyle(fontSize: 11, color: Colors.grey))
+          else
+            ...correlations.map((corr) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(corr.name,
+                          style: const TextStyle(fontSize: 11)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: corr.value > 0
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          corr.value.toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: corr.value > 0
+                                ? Colors.green
+                                : Colors.red,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
+                    ],
+                  ),
+                )),
         ],
       ),
     );
   }
 
   Widget _buildHistoricalTimeline(BuildContext context) {
-    final milestones = [
-      {
-        'date': 'Mar 15, 2026',
-        'event': 'Asset Acquisition',
-        'price': '\$${(asset.value * 0.8).toStringAsFixed(2)}',
-        'icon': Icons.shopping_bag_outlined
-      },
-      {
-        'date': 'Feb 10, 2026',
-        'event': 'All-Time High',
-        'price': '\$${(asset.value * 1.4).toStringAsFixed(2)}',
-        'icon': Icons.trending_up
-      },
-      {
-        'date': 'Jan 01, 2026',
-        'event': 'Year Start',
-        'price': '\$${(asset.value * 0.95).toStringAsFixed(2)}',
-        'icon': Icons.calendar_today
-      },
-    ];
+    final milestones = asset.milestones;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,69 +423,72 @@ class AssetDetailModal extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
-        ...milestones.asMap().entries.map((entry) {
-          final index = entry.key;
-          final milestone = entry.value;
-          final isLast = index == milestones.length - 1;
+        if (milestones.isEmpty)
+          const Text('No historical milestones available', style: TextStyle(color: Colors.grey, fontSize: 13))
+        else
+          ...milestones.asMap().entries.map((entry) {
+            final index = entry.key;
+            final milestone = entry.value;
+            final isLast = index == milestones.length - 1;
 
-          return IntrinsicHeight(
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2E3192).withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(milestone['icon'] as IconData,
-                          size: 16, color: const Color(0xFF2E3192)),
-                    ),
-                    if (!isLast)
-                      Expanded(
-                        child: Container(
-                          width: 2,
-                          color: Colors.grey[300],
+            return IntrinsicHeight(
+              child: Row(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2E3192).withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
                         ),
+                        child: Icon(milestone.icon,
+                            size: 16, color: const Color(0xFF2E3192)),
                       ),
-                  ],
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(milestone['date'] as String,
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey)),
-                        Text(milestone['event'] as String,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
-                        Text('Price: ${milestone['price']}',
-                            style: const TextStyle(
-                                fontSize: 13, color: Colors.blueGrey)),
-                        if (milestone['event'] == 'All-Time High')
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(
-                              'What if you sold here? +\$${(asset.value * 0.4).toStringAsFixed(2)} extra',
-                              style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.orange,
-                                  fontStyle: FontStyle.italic),
-                            ),
+                      if (!isLast)
+                        Expanded(
+                          child: Container(
+                            width: 2,
+                            color: Colors.grey[300],
                           ),
-                      ],
+                        ),
+                    ],
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(milestone.date,
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey)),
+                          Text(milestone.event,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          Text('Price: ${milestone.price}',
+                              style: const TextStyle(
+                                  fontSize: 13, color: Colors.blueGrey)),
+                          if (milestone.event == 'All-Time High')
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Text(
+                                'What if you sold here? +\$${(asset.value * 0.4).toStringAsFixed(2)} extra',
+                                style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.orange,
+                                    fontStyle: FontStyle.italic),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }),
+                ],
+              ),
+            );
+          }),
       ],
     );
   }

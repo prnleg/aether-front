@@ -18,6 +18,7 @@ abstract class DashboardState extends Equatable {
 
   // Helper getters to simplify access in the UI if needed
   double get totalNetWorth => 0.0;
+  double get dailyProfit => 0.0;
   List<Asset> get assets => [];
   List<HistoryPoint> get netWorthHistory => [];
   TimeRange get timeRange => TimeRange.oneMonth;
@@ -31,6 +32,8 @@ class DashboardLoaded extends DashboardState {
   @override
   final double totalNetWorth;
   @override
+  final double dailyProfit;
+  @override
   final List<Asset> assets;
   @override
   final List<HistoryPoint> netWorthHistory;
@@ -39,6 +42,7 @@ class DashboardLoaded extends DashboardState {
 
   const DashboardLoaded({
     required this.totalNetWorth,
+    required this.dailyProfit,
     required this.assets,
     required this.netWorthHistory,
     this.timeRange = TimeRange.oneMonth,
@@ -46,12 +50,14 @@ class DashboardLoaded extends DashboardState {
 
   DashboardLoaded copyWith({
     double? totalNetWorth,
+    double? dailyProfit,
     List<Asset>? assets,
     List<HistoryPoint>? netWorthHistory,
     TimeRange? timeRange,
   }) {
     return DashboardLoaded(
       totalNetWorth: totalNetWorth ?? this.totalNetWorth,
+      dailyProfit: dailyProfit ?? this.dailyProfit,
       assets: assets ?? this.assets,
       netWorthHistory: netWorthHistory ?? this.netWorthHistory,
       timeRange: timeRange ?? this.timeRange,
@@ -59,7 +65,7 @@ class DashboardLoaded extends DashboardState {
   }
 
   @override
-  List<Object?> get props => [totalNetWorth, assets, netWorthHistory, timeRange];
+  List<Object?> get props => [totalNetWorth, dailyProfit, assets, netWorthHistory, timeRange];
 }
 
 class DashboardError extends DashboardState {

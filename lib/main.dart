@@ -7,6 +7,8 @@ import 'logic/blocs/settings/settings_bloc.dart';
 import 'logic/blocs/settings/settings_event.dart';
 import 'logic/blocs/settings/settings_state.dart';
 import 'logic/blocs/auth/auth_bloc.dart';
+import 'logic/blocs/account/account_bloc.dart';
+import 'logic/blocs/account/account_event.dart';
 import 'presentation/theme/app_theme.dart';
 import 'presentation/router/app_router.dart';
 import 'service_locator.dart' as sl;
@@ -42,6 +44,7 @@ class _AetherAppState extends State<AetherApp> {
           create: (context) => sl.sl<SettingsBloc>()..add(LoadSettings()),
         ),
         BlocProvider(create: (context) => sl.sl<AuthBloc>()),
+        BlocProvider(create: (context) => sl.sl<AccountBloc>()..add(AccountStarted())),
       ],
       child: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, state) {

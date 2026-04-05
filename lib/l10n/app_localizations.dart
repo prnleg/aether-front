@@ -427,6 +427,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ALL'**
   String get allShort;
+
+  /// No description provided for @vaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vault & Security'**
+  String get vaultTitle;
+
+  /// No description provided for @securitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get securitySection;
+
+  /// No description provided for @biometricLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Lock'**
+  String get biometricLock;
+
+  /// No description provided for @biometricSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require FaceID/TouchID to open'**
+  String get biometricSubtitle;
+
+  /// No description provided for @preferencesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferencesSection;
+
+  /// No description provided for @primaryCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Currency'**
+  String get primaryCurrency;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @apiConnections.
+  ///
+  /// In en, this message translates to:
+  /// **'API Connections'**
+  String get apiConnections;
+
+  /// No description provided for @biometricsNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics not available on this device'**
+  String get biometricsNotAvailable;
+
+  /// No description provided for @biometricReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please authenticate to enable the Vault'**
+  String get biometricReason;
+
+  /// No description provided for @twoFactorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an extra layer of protection'**
+  String get twoFactorSubtitle;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @lightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Mode'**
+  String get lightMode;
+
+  /// No description provided for @steamInventoryApi.
+  ///
+  /// In en, this message translates to:
+  /// **'Steam Inventory API'**
+  String get steamInventoryApi;
+
+  /// No description provided for @connectedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected as \"{username}\"'**
+  String connectedAs(Object username);
+
+  /// No description provided for @exchangeApiKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange API Keys'**
+  String get exchangeApiKeys;
+
+  /// No description provided for @exchangeApiSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Binance, Coinbase, Kraken'**
+  String get exchangeApiSubtitle;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account & Data'**
+  String get deleteAccount;
+
+  /// No description provided for @vaultHeaderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Data is Encrypted'**
+  String get vaultHeaderTitle;
+
+  /// No description provided for @vaultHeaderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Aether uses military-grade AES-256 encryption to keep your assets private.'**
+  String get vaultHeaderSubtitle;
+
+  /// No description provided for @selectCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Currency'**
+  String get selectCurrency;
+
+  /// No description provided for @usdName.
+  ///
+  /// In en, this message translates to:
+  /// **'United States Dollar'**
+  String get usdName;
+
+  /// No description provided for @brlName.
+  ///
+  /// In en, this message translates to:
+  /// **'Brazilian Real'**
+  String get brlName;
+
+  /// No description provided for @eurName.
+  ///
+  /// In en, this message translates to:
+  /// **'Euro'**
+  String get eurName;
+
+  /// No description provided for @btcName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin'**
+  String get btcName;
+
+  /// No description provided for @discoveryHub.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovery Hub'**
+  String get discoveryHub;
+
+  /// No description provided for @searchDiscovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Search assets (e.g. Dragon Lore, BTC)...'**
+  String get searchDiscovery;
+
+  /// No description provided for @portfolioWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio Weight'**
+  String get portfolioWeight;
+
+  /// No description provided for @concentrationRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'Concentration Risk'**
+  String get concentrationRisk;
+
+  /// No description provided for @exposureModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate Exposure'**
+  String get exposureModerate;
+
+  /// No description provided for @diversified.
+  ///
+  /// In en, this message translates to:
+  /// **'Well Diversified'**
+  String get diversified;
 }
 
 class _AppLocalizationsDelegate

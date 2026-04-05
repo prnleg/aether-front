@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 enum AssetType {
   crypto,
@@ -28,6 +29,38 @@ class HistoryPoint extends Equatable {
   List<Object?> get props => [date, value];
 }
 
+class AssetCorrelation extends Equatable {
+  final String name;
+  final double value;
+
+  const AssetCorrelation({required this.name, required this.value});
+
+  factory AssetCorrelation.fromJson(Map<String, dynamic> json) => AssetCorrelation(
+        name: json['name'] as String,
+        value: (json['value'] as num).toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'value': value,
+      };
+
+  @override
+  List<Object?> get props => [name, value];
+}
+
+class AssetMilestone extends Equatable {
+  final String date;
+  final String event;
+  final String price;
+  final IconData icon;
+
+  const AssetMilestone({required this.date, required this.event, required this.price, required this.icon});
+
+  @override
+  List<Object?> get props => [date, event, price, icon];
+}
+
 class Asset extends Equatable {
   final String id;
   final String name;
@@ -35,6 +68,8 @@ class Asset extends Equatable {
   final AssetType type;
   final double change24h; // Percentage change in the last 24h
   final List<HistoryPoint> history;
+  final List<AssetCorrelation> correlations;
+  final List<AssetMilestone> milestones;
 
   const Asset({
     required this.id,
@@ -43,6 +78,8 @@ class Asset extends Equatable {
     required this.type,
     this.change24h = 0.0,
     this.history = const [],
+    this.correlations = const [],
+    this.milestones = const [],
   });
 
   Asset copyWith({
@@ -52,6 +89,8 @@ class Asset extends Equatable {
     AssetType? type,
     double? change24h,
     List<HistoryPoint>? history,
+    List<AssetCorrelation>? correlations,
+    List<AssetMilestone>? milestones,
   }) {
     return Asset(
       id: id ?? this.id,
@@ -60,6 +99,8 @@ class Asset extends Equatable {
       type: type ?? this.type,
       change24h: change24h ?? this.change24h,
       history: history ?? this.history,
+      correlations: correlations ?? this.correlations,
+      milestones: milestones ?? this.milestones,
     );
   }
 
@@ -85,7 +126,7 @@ class Asset extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, name, value, type, change24h, history];
+  List<Object?> get props => [id, name, value, type, change24h, history, correlations, milestones];
 
   String get typeName {
     switch (type) {

@@ -99,7 +99,7 @@ class DashboardView extends StatelessWidget {
                 const SizedBox(height: 30),
                 _buildSectionHeader(context, l10n.portfolioStats, true),
                 const SizedBox(height: 15),
-                _buildStatsGrid(context, state.assets),
+                _buildStatsGrid(context, state),
                 const SizedBox(height: 30),
                 _buildSectionHeader(context, l10n.yourAssets, false),
                 const SizedBox(height: 15),
@@ -123,7 +123,7 @@ class DashboardView extends StatelessWidget {
                       closedColor: Colors.transparent,
                       openColor: Theme.of(context).scaffoldBackgroundColor,
                       openBuilder: (context, action) =>
-                          AssetDetailModal(asset: asset),
+                          AssetDetailModal(asset: asset, totalNetWorth: state.totalNetWorth),
                       closedBuilder: (context, action) =>
                           _buildPulseAssetCard(context, asset, isBigMover),
                     );
@@ -347,8 +347,11 @@ class DashboardView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsGrid(BuildContext context, List<Asset> assets) {
+  Widget _buildStatsGrid(BuildContext context, DashboardState state) {
     final l10n = AppLocalizations.of(context)!;
+    final assets = state.assets;
+    final dailyProfit = state.dailyProfit;
+    final dailyProfitStr = '${dailyProfit >= 0 ? '+' : ''}\$${dailyProfit.abs().toStringAsFixed(2)}';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -373,7 +376,7 @@ class DashboardView extends StatelessWidget {
             _buildStatItem(context, l10n.categories,
                 '${assets.map((e) => e.type).toSet().length}', Icons.category),
             _buildStatItem(
-                context, l10n.dailyProfit, '+\$450.00', Icons.attach_money),
+                context, l10n.dailyProfit, dailyProfitStr, Icons.attach_money),
           ],
         );
       },

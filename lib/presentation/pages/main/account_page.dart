@@ -6,7 +6,6 @@ import '../../../logic/blocs/account/account_event.dart';
 import '../../../logic/blocs/account/account_state.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
-import '../../../service_locator.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -20,6 +19,16 @@ class _AccountPageState extends State<AccountPage> {
   final _emailController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    final state = context.read<AccountBloc>().state;
+    if (state is AccountLoaded) {
+      _nameController.text = state.user.name;
+      _emailController.text = state.user.email;
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -30,42 +39,39 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return BlocProvider(
-      create: (context) => sl<AccountBloc>()..add(AccountStarted()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.account,
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        body: BlocConsumer<AccountBloc, AccountState>(
-          listener: (context, state) {
-            if (state is AccountLoaded) {
-              _nameController.text = state.user.name;
-              _emailController.text = state.user.email;
-            }
-          },
-          builder: (context, state) {
-            if (state is AccountLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is AccountLoaded) {
-              return ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                  _buildProfileHeader(state.user),
-                  const SizedBox(height: 40),
-                  _buildConfigSection(context),
-                  const SizedBox(height: 30),
-                  _buildSecuritySection(context),
-                  const SizedBox(height: 40),
-                  _buildSignOutButton(context),
-                ],
-              );
-            } else if (state is AccountError) {
-              return Center(child: Text(state.message));
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.account,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+      ),
+      body: BlocConsumer<AccountBloc, AccountState>(
+        listener: (context, state) {
+          if (state is AccountLoaded) {
+            _nameController.text = state.user.name;
+            _emailController.text = state.user.email;
+          }
+        },
+        builder: (context, state) {
+          if (state is AccountLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is AccountLoaded) {
+            return ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                _buildProfileHeader(state.user),
+                const SizedBox(height: 40),
+                _buildConfigSection(context),
+                const SizedBox(height: 30),
+                _buildSecuritySection(context),
+                const SizedBox(height: 40),
+                _buildSignOutButton(context),
+              ],
+            );
+          } else if (state is AccountError) {
+            return Center(child: Text(state.message));
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

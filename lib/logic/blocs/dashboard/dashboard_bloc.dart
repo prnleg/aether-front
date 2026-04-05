@@ -25,6 +25,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
       final totalNetWorth = assets.fold<double>(
           0.0, (sum, asset) => sum + asset.value);
+          
+      final dailyProfit = assets.fold<double>(
+          0.0, (sum, asset) => sum + (asset.value * (asset.change24h / 100)));
 
       final timeRange = state is DashboardLoaded 
           ? (state as DashboardLoaded).timeRange 
@@ -32,6 +35,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
       emit(DashboardLoaded(
         totalNetWorth: totalNetWorth,
+        dailyProfit: dailyProfit,
         assets: assets,
         netWorthHistory: _getFilteredHistory(fullHistory, timeRange),
         timeRange: timeRange,
@@ -108,11 +112,13 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
       final updatedAssets = List<Asset>.from(currentState.assets)..add(newAsset);
       final newTotalNetWorth = updatedAssets.fold<double>(0, (sum, item) => sum + item.value);
+      final newDailyProfit = updatedAssets.fold<double>(0.0, (sum, asset) => sum + (asset.value * (asset.change24h / 100)));
       
       final fullHistory = await _assetRepository.getNetWorthHistory(updatedAssets);
 
       emit(currentState.copyWith(
         totalNetWorth: newTotalNetWorth,
+        dailyProfit: newDailyProfit,
         assets: updatedAssets,
         netWorthHistory: _getFilteredHistory(fullHistory, currentState.timeRange),
       ));

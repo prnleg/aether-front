@@ -174,4 +174,102 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get allShort => 'TUDO';
+
+  @override
+  String get vaultTitle => 'Cofre & Segurança';
+
+  @override
+  String get securitySection => 'Segurança';
+
+  @override
+  String get biometricLock => 'Bloqueio Biométrico';
+
+  @override
+  String get biometricSubtitle => 'Exigir FaceID/TouchID ao abrir';
+
+  @override
+  String get preferencesSection => 'Preferências';
+
+  @override
+  String get primaryCurrency => 'Moeda Principal';
+
+  @override
+  String get appearance => 'Aparência';
+
+  @override
+  String get apiConnections => 'Conexões de API';
+
+  @override
+  String get biometricsNotAvailable =>
+      'Biometrics não disponíveis neste dispositivo';
+
+  @override
+  String get biometricReason => 'Por favor, autentique-se para acessar o cofre';
+
+  @override
+  String get twoFactorSubtitle =>
+      'Adicione uma camada extra de segurança à sua conta';
+
+  @override
+  String get darkMode => 'Modo Escuro';
+
+  @override
+  String get lightMode => 'Modo Claro';
+
+  @override
+  String get steamInventoryApi => 'Steam Inventory API';
+
+  @override
+  String connectedAs(Object username) {
+    return 'Conectado como \"$username\"';
+  }
+
+  @override
+  String get exchangeApiKeys => 'Exchange chave API';
+
+  @override
+  String get exchangeApiSubtitle => 'Binance, Coinbase, Kraken';
+
+  @override
+  String get deleteAccount => 'Deletar Conta & Dados';
+
+  @override
+  String get vaultHeaderTitle => 'Seus dados estão encriptados';
+
+  @override
+  String get vaultHeaderSubtitle =>
+      'Aether usa AES-256 encryption para manter seus ativos privados.';
+
+  @override
+  String get selectCurrency => 'Selecione sua moeda principal';
+
+  @override
+  String get usdName => 'Dolar Americano';
+
+  @override
+  String get brlName => 'Real Brasileiro';
+
+  @override
+  String get eurName => 'Euro';
+
+  @override
+  String get btcName => 'Bitcoin';
+
+  @override
+  String get discoveryHub => 'Hub de Descoberta';
+
+  @override
+  String get searchDiscovery => 'Pesquisar ativos (ex: Dragon Lore, BTC)...';
+
+  @override
+  String get portfolioWeight => 'Peso do Portfólio';
+
+  @override
+  String get concentrationRisk => 'Risco de Concentração';
+
+  @override
+  String get exposureModerate => 'Exposição Moderada';
+
+  @override
+  String get diversified => 'Bem Diversificado';
 }

@@ -174,4 +174,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allShort => 'ALL';
+
+  @override
+  String get vaultTitle => 'Vault & Security';
+
+  @override
+  String get securitySection => 'Security';
+
+  @override
+  String get biometricLock => 'Biometric Lock';
+
+  @override
+  String get biometricSubtitle => 'Require FaceID/TouchID to open';
+
+  @override
+  String get preferencesSection => 'Preferences';
+
+  @override
+  String get primaryCurrency => 'Primary Currency';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get apiConnections => 'API Connections';
+
+  @override
+  String get biometricsNotAvailable =>
+      'Biometrics not available on this device';
+
+  @override
+  String get biometricReason => 'Please authenticate to enable the Vault';
+
+  @override
+  String get twoFactorSubtitle => 'Add an extra layer of protection';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get lightMode => 'Light Mode';
+
+  @override
+  String get steamInventoryApi => 'Steam Inventory API';
+
+  @override
+  String connectedAs(Object username) {
+    return 'Connected as \"$username\"';
+  }
+
+  @override
+  String get exchangeApiKeys => 'Exchange API Keys';
+
+  @override
+  String get exchangeApiSubtitle => 'Binance, Coinbase, Kraken';
+
+  @override
+  String get deleteAccount => 'Delete Account & Data';
+
+  @override
+  String get vaultHeaderTitle => 'Your Data is Encrypted';
+
+  @override
+  String get vaultHeaderSubtitle =>
+      'Aether uses military-grade AES-256 encryption to keep your assets private.';
+
+  @override
+  String get selectCurrency => 'Select Currency';
+
+  @override
+  String get usdName => 'United States Dollar';
+
+  @override
+  String get brlName => 'Brazilian Real';
+
+  @override
+  String get eurName => 'Euro';
+
+  @override
+  String get btcName => 'Bitcoin';
+
+  @override
+  String get discoveryHub => 'Discovery Hub';
+
+  @override
+  String get searchDiscovery => 'Search assets (e.g. Dragon Lore, BTC)...';
+
+  @override
+  String get portfolioWeight => 'Portfolio Weight';
+
+  @override
+  String get concentrationRisk => 'Concentration Risk';
+
+  @override
+  String get exposureModerate => 'Moderate Exposure';
+
+  @override
+  String get diversified => 'Well Diversified';
 }
