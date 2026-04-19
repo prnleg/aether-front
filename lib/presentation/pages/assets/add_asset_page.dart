@@ -17,12 +17,32 @@ class _AddAssetPageState extends State<AddAssetPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _valueController = TextEditingController();
+
+  // Crypto
+  final _symbolController = TextEditingController();
+  final _quantityController = TextEditingController();
+
+  // Steam
+  final _marketHashNameController = TextEditingController();
+
+  // Physical
+  final _categoryController = TextEditingController();
+  final _brandController = TextEditingController();
+  String _condition = 'Good';
+
   AssetType _selectedType = AssetType.crypto;
+
+  static const _conditions = ['New', 'Like New', 'Good', 'Fair', 'Poor'];
 
   @override
   void dispose() {
     _nameController.dispose();
     _valueController.dispose();
+    _symbolController.dispose();
+    _quantityController.dispose();
+    _marketHashNameController.dispose();
+    _categoryController.dispose();
+    _brandController.dispose();
     super.dispose();
   }
 
@@ -57,9 +77,8 @@ class _AddAssetPageState extends State<AddAssetPage> {
                       label: l10n.assetName,
                       controller: _nameController,
                       icon: Icons.label_outline,
-                      validator: (value) => value == null || value.isEmpty
-                          ? l10n.requiredField
-                          : null,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? l10n.requiredField : null,
                     ),
                     const SizedBox(height: 20),
                     _buildTypeDropdown(context, l10n),
@@ -70,19 +89,18 @@ class _AddAssetPageState extends State<AddAssetPage> {
                       controller: _valueController,
                       icon: Icons.attach_money,
                       keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.requiredField;
-                        }
-                        if (double.tryParse(value) == null) {
-                          return l10n.invalidNumber;
-                        }
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return l10n.requiredField;
+                        if (double.tryParse(v) == null) return l10n.invalidNumber;
                         return null;
                       },
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              // Type-specific fields
+              _buildTypeSpecificFields(context, l10n),
               const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
@@ -108,17 +126,87 @@ class _AddAssetPageState extends State<AddAssetPage> {
     );
   }
 
+  Widget _buildTypeSpecificFields(BuildContext context, AppLocalizations l10n) {
+    switch (_selectedType) {
+      case AssetType.crypto:
+        return _buildCard(
+          context: context,
+          child: Column(
+            children: [
+              _buildTextField(
+                context: context,
+                label: 'Symbol (e.g. BTC, ETH)',
+                controller: _symbolController,
+                icon: Icons.currency_bitcoin,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(
+                context: context,
+                label: 'Quantity',
+                controller: _quantityController,
+                icon: Icons.numbers,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return l10n.requiredField;
+                  if (double.tryParse(v) == null) return l10n.invalidNumber;
+                  return null;
+                },
+              ),
+            ],
+          ),
+        );
+
+      case AssetType.inventory:
+        return _buildCard(
+          context: context,
+          child: _buildTextField(
+            context: context,
+            label: 'Market Hash Name',
+            controller: _marketHashNameController,
+            icon: Icons.inventory_2_outlined,
+            validator: (v) =>
+                (v == null || v.isEmpty) ? l10n.requiredField : null,
+          ),
+        );
+
+      case AssetType.collectible:
+      case AssetType.stock:
+      case AssetType.cash:
+        return _buildCard(
+          context: context,
+          child: Column(
+            children: [
+              _buildTextField(
+                context: context,
+                label: 'Category',
+                controller: _categoryController,
+                icon: Icons.category_outlined,
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(
+                context: context,
+                label: 'Brand',
+                controller: _brandController,
+                icon: Icons.store_outlined,
+              ),
+              const SizedBox(height: 20),
+              _buildConditionDropdown(context),
+            ],
+          ),
+        );
+    }
+  }
+
   Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    );
+    return Text(title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold));
   }
 
   Widget _buildCard({required BuildContext context, required Widget child}) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -126,9 +214,10 @@ class _AddAssetPageState extends State<AddAssetPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4)),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: child,
@@ -145,7 +234,6 @@ class _AddAssetPageState extends State<AddAssetPage> {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -176,7 +264,6 @@ class _AddAssetPageState extends State<AddAssetPage> {
   Widget _buildTypeDropdown(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -202,7 +289,7 @@ class _AddAssetPageState extends State<AddAssetPage> {
                 return DropdownMenuItem(
                   value: type,
                   child: Text(
-                    _getTypeName(type),
+                    type.name[0].toUpperCase() + type.name.substring(1),
                     style: theme.textTheme.bodyMedium,
                   ),
                 );
@@ -214,8 +301,38 @@ class _AddAssetPageState extends State<AddAssetPage> {
     );
   }
 
-  String _getTypeName(AssetType type) {
-    return type.name[0].toUpperCase() + type.name.substring(1);
+  Widget _buildConditionDropdown(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Condition',
+            style: TextStyle(
+                fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white10 : const Color(0xFFF5F7FA),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _condition,
+              isExpanded: true,
+              dropdownColor: theme.cardColor,
+              icon: const Icon(Icons.keyboard_arrow_down,
+                  color: Color(0xFF2E3192)),
+              onChanged: (value) => setState(() => _condition = value!),
+              items: _conditions
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                  .toList(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   void _submit() {
@@ -224,6 +341,20 @@ class _AddAssetPageState extends State<AddAssetPage> {
             name: _nameController.text,
             type: _selectedType,
             initialValue: double.parse(_valueController.text),
+            symbol: _symbolController.text.isEmpty
+                ? null
+                : _symbolController.text.toUpperCase(),
+            quantity: double.tryParse(_quantityController.text),
+            marketHashName: _marketHashNameController.text.isEmpty
+                ? null
+                : _marketHashNameController.text,
+            category: _categoryController.text.isEmpty
+                ? null
+                : _categoryController.text,
+            brand: _brandController.text.isEmpty
+                ? null
+                : _brandController.text,
+            condition: _condition,
           ));
       context.pop();
     }

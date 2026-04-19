@@ -78,27 +78,34 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Widget _buildProfileHeader(dynamic user) {
+    final initials = _getInitials(user.name as String);
     return Column(
       children: [
         Stack(
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundColor: const Color(0xFF2E3192).withValues(alpha: 0.1),
-              child:
-                  const Icon(Icons.person, size: 60, color: Color(0xFF2E3192)),
+              backgroundColor: const Color(0xFF2E3192),
+              child: Text(
+                initials,
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
             Positioned(
               bottom: 0,
               right: 0,
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2E3192),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1BFFFF),
                   shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
                 ),
-                child:
-                    const Icon(Icons.camera_alt, size: 20, color: Colors.white),
+                child: const Icon(Icons.camera_alt, size: 18, color: Color(0xFF2E3192)),
               ),
             ),
           ],
@@ -114,6 +121,13 @@ class _AccountPageState extends State<AccountPage> {
         ),
       ],
     );
+  }
+
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.isEmpty || name.isEmpty) return '?';
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
   }
 
   Widget _buildConfigSection(BuildContext context) {

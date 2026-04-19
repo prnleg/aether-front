@@ -28,3 +28,11 @@ class BiometricToggled extends SettingsEvent {
   @override
   List<Object> get props => [enabled];
 }
+
+class ChangeCurrency extends SettingsEvent {
+  final String currency;
+  const ChangeCurrency(this.currency);
+
+  @override
+  List<Object> get props => [currency];
+}

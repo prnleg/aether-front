@@ -5,19 +5,26 @@ import 'dashboard_state.dart';
 import '../../../domain/models/asset_model.dart';
 import '../../../domain/usecases/get_assets_use_case.dart';
 import '../../../domain/usecases/add_asset_use_case.dart';
+import '../../../domain/usecases/delete_asset_use_case.dart';
 import '../../../domain/usecases/get_net_worth_history_use_case.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final GetAssetsUseCase _getAssets;
   final AddAssetUseCase _addAsset;
+  final DeleteAssetUseCase _deleteAsset;
   final GetNetWorthHistoryUseCase _getNetWorthHistory;
 
-  DashboardBloc(this._getAssets, this._addAsset, this._getNetWorthHistory)
-      : super(DashboardInitial()) {
+  DashboardBloc(
+    this._getAssets,
+    this._addAsset,
+    this._deleteAsset,
+    this._getNetWorthHistory,
+  ) : super(DashboardInitial()) {
     on<DashboardStarted>(_onDashboardStarted);
     on<RefreshDashboard>(_onDashboardStarted);
     on<ChangeTimeRange>(_onChangeTimeRange);
     on<AddAsset>(_onAddAsset);
+    on<DeleteAsset>(_onDeleteAsset);
   }
 
   Future<void> _onDashboardStarted(
@@ -100,6 +107,38 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     return fullHistory.sublist(fullHistory.length - days);
   }
 
+  Future<void> _onDeleteAsset(
+    DeleteAsset event,
+    Emitter<DashboardState> emit,
+  ) async {
+    if (state is DashboardLoaded) {
+      final currentState = state as DashboardLoaded;
+      final updatedAssets = currentState.assets
+          .where((a) => a.id != event.assetId)
+          .toList();
+
+      try {
+        await _deleteAsset.execute(event.assetId);
+      } catch (e) {
+        debugPrint(e.toString());
+        // Keep UI updated even if backend call fails (will re-sync on refresh).
+      }
+
+      final newTotal =
+          updatedAssets.fold<double>(0.0, (sum, a) => sum + a.value);
+      final newDailyProfit = updatedAssets.fold<double>(
+          0.0, (sum, a) => sum + (a.value * (a.change24h / 100)));
+      final fullHistory = await _getNetWorthHistory.execute(updatedAssets);
+
+      emit(currentState.copyWith(
+        assets: updatedAssets,
+        totalNetWorth: newTotal,
+        dailyProfit: newDailyProfit,
+        netWorthHistory: _getFilteredHistory(fullHistory, currentState.timeRange),
+      ));
+    }
+  }
+
   Future<void> _onAddAsset(
     AddAsset event,
     Emitter<DashboardState> emit,
@@ -115,9 +154,24 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         history: [
           HistoryPoint(date: DateTime.now(), value: event.initialValue),
         ],
+        symbol: event.symbol,
+        quantity: event.quantity,
+        marketHashName: event.marketHashName,
+        category: event.category,
+        brand: event.brand,
+        condition: event.condition,
+        currency: event.currency,
       );
 
-      await _addAsset.execute(newAsset);
+      try {
+        await _addAsset.execute(newAsset);
+      } catch (e) {
+        debugPrint('_onAddAsset failed: $e');
+        emit(currentState.copyWith(
+          operationError: 'Failed to add asset. Please try again.',
+        ));
+        return;
+      }
 
       final updatedAssets = List<Asset>.from(currentState.assets)
         ..add(newAsset);

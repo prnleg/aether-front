@@ -29,3 +29,5 @@ class RegisterRequested extends AuthEvent {
 }
 
 class LogoutRequested extends AuthEvent {}
+
+class CancelResuming extends AuthEvent {}

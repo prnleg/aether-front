@@ -6,6 +6,8 @@ import '../../../domain/usecases/get_locale_use_case.dart';
 import '../../../domain/usecases/set_locale_use_case.dart';
 import '../../../domain/usecases/get_biometrics_enabled_use_case.dart';
 import '../../../domain/usecases/set_biometrics_enabled_use_case.dart';
+import '../../../domain/usecases/get_currency_use_case.dart';
+import '../../../domain/usecases/set_currency_use_case.dart';
 import 'settings_event.dart';
 import 'settings_state.dart';
 
@@ -16,6 +18,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SetLocaleUseCase _setLocale;
   final GetBiometricsEnabledUseCase _getBiometricsEnabled;
   final SetBiometricsEnabledUseCase _setBiometricsEnabled;
+  final GetCurrencyUseCase _getCurrency;
+  final SetCurrencyUseCase _setCurrency;
 
   SettingsBloc(
     this._getThemeMode,
@@ -24,11 +28,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     this._setLocale,
     this._getBiometricsEnabled,
     this._setBiometricsEnabled,
+    this._getCurrency,
+    this._setCurrency,
   ) : super(SettingsState.initial()) {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleTheme>(_onToggleTheme);
     on<ChangeLanguage>(_onChangeLanguage);
     on<BiometricToggled>(_onBiometricToggled);
+    on<ChangeCurrency>(_onChangeCurrency);
   }
 
   // Hive reads are synchronous after box init — void handler is intentional.
@@ -36,10 +43,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final themeMode = _getThemeMode.execute();
     final locale = _getLocale.execute();
     final biometricsEnabled = _getBiometricsEnabled.execute();
+    final currency = _getCurrency.execute();
     emit(state.copyWith(
       themeMode: themeMode,
       locale: locale,
       biometricsEnabled: biometricsEnabled,
+      currency: currency,
     ));
   }
 
@@ -61,5 +70,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       BiometricToggled event, Emitter<SettingsState> emit) async {
     await _setBiometricsEnabled.execute(event.enabled);
     emit(state.copyWith(biometricsEnabled: event.enabled));
+  }
+
+  Future<void> _onChangeCurrency(
+      ChangeCurrency event, Emitter<SettingsState> emit) async {
+    await _setCurrency.execute(event.currency);
+    emit(state.copyWith(currency: event.currency));
   }
 }

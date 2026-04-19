@@ -244,6 +244,12 @@ class AppLocalizationsPt extends AppLocalizations {
       'Aether usa AES-256 encryption para manter seus ativos privados.';
 
   @override
+  String get language => 'Idioma';
+
+  @override
+  String get selectLanguage => 'Selecione o idioma';
+
+  @override
   String get selectCurrency => 'Selecione sua moeda principal';
 
   @override

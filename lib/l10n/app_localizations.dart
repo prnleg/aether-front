@@ -554,6 +554,18 @@ abstract class AppLocalizations {
   /// **'Aether uses military-grade AES-256 encryption to keep your assets private.'**
   String get vaultHeaderSubtitle;
 
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @selectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
   /// No description provided for @selectCurrency.
   ///
   /// In en, this message translates to:

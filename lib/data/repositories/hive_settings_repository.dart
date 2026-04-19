@@ -7,6 +7,7 @@ class HiveSettingsRepository implements SettingsRepository {
   static const String _themeKey = 'themeMode';
   static const String _localeKey = 'locale';
   static const String _biometricsKey = 'biometricsEnabled';
+  static const String _currencyKey = 'currency';
   late Box _box;
 
   @override
@@ -39,6 +40,16 @@ class HiveSettingsRepository implements SettingsRepository {
   @override
   Future<void> setLocale(Locale locale) async {
     await _box.put(_localeKey, locale.languageCode);
+  }
+
+  @override
+  String getCurrency() {
+    return _box.get(_currencyKey, defaultValue: 'USD') as String;
+  }
+
+  @override
+  Future<void> setCurrency(String currency) async {
+    await _box.put(_currencyKey, currency);
   }
 
   @override

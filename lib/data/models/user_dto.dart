@@ -13,11 +13,13 @@ class UserDto {
     this.profilePictureUrl = '',
   });
 
+  /// Handles both camelCase (Flutter convention) and PascalCase (.NET default).
   factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        email: json['email'] as String,
-        profilePictureUrl: json['profilePictureUrl'] as String? ?? '',
+        id: (json['id'] ?? json['Id'] ?? '') as String,
+        name: (json['name'] ?? json['Name'] ?? '') as String,
+        email: (json['email'] ?? json['Email'] ?? '') as String,
+        profilePictureUrl:
+            (json['profilePictureUrl'] ?? json['ProfilePictureUrl'] ?? '') as String,
       );
 
   Map<String, dynamic> toJson() => {

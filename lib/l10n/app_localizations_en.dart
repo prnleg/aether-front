@@ -243,6 +243,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Aether uses military-grade AES-256 encryption to keep your assets private.';
 
   @override
+  String get language => 'Language';
+
+  @override
+  String get selectLanguage => 'Select Language';
+
+  @override
   String get selectCurrency => 'Select Currency';
 
   @override

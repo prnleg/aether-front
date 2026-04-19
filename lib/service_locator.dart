@@ -17,6 +17,7 @@ import 'domain/usecases/login_use_case.dart';
 import 'domain/usecases/register_use_case.dart';
 import 'domain/usecases/logout_use_case.dart';
 import 'domain/usecases/get_auth_status_use_case.dart';
+import 'domain/usecases/get_cached_name_use_case.dart';
 import 'domain/usecases/get_market_assets_use_case.dart';
 import 'domain/usecases/get_theme_mode_use_case.dart';
 import 'domain/usecases/set_theme_mode_use_case.dart';
@@ -24,16 +25,25 @@ import 'domain/usecases/get_locale_use_case.dart';
 import 'domain/usecases/set_locale_use_case.dart';
 import 'domain/usecases/get_biometrics_enabled_use_case.dart';
 import 'domain/usecases/set_biometrics_enabled_use_case.dart';
+import 'domain/usecases/get_currency_use_case.dart';
+import 'domain/usecases/set_currency_use_case.dart';
+import 'domain/usecases/delete_asset_use_case.dart';
 import 'core/services/biometric_service.dart';
+
+// Network & Services
+import 'core/network/api_client.dart';
+import 'core/network/auth_interceptor.dart';
+import 'core/services/token_storage.dart';
 
 // Data - Data Sources
 import 'data/datasources/asset_remote_data_source.dart';
+import 'data/datasources/asset_remote_data_source_impl.dart';
 
 // Data - Repositories (implementations)
-import 'data/repositories/mock_asset_repository.dart';
-import 'data/repositories/mock_user_repository.dart';
-import 'data/repositories/mock_auth_repository.dart';
+import 'data/repositories/asset_repository_impl.dart';
 import 'data/repositories/mock_discovery_repository.dart';
+import 'data/repositories/auth_repository_impl.dart';
+import 'data/repositories/user_repository_impl.dart';
 import 'data/repositories/hive_settings_repository.dart';
 
 // BLoCs
@@ -47,19 +57,27 @@ import 'logic/blocs/playground/playground_bloc.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // --- Network & Token Storage ---
+  final tokenStorage = TokenStorage();
+  await tokenStorage.init();
+  sl.registerLazySingleton<TokenStorage>(() => tokenStorage);
+  sl.registerLazySingleton(() => AuthInterceptor(tokenStorage));
+  sl.registerLazySingleton(() => ApiClient(sl()));
+
   // --- Data Sources ---
   sl.registerLazySingleton<AssetRemoteDataSource>(
-      () => MockAssetRemoteDataSource());
+      () => AssetRemoteDataSourceImpl(sl<ApiClient>(), sl<TokenStorage>()));
 
-  // --- Repositories (stateless, always singletons) ---
-  sl.registerLazySingleton<AssetRepository>(
-      () => MockAssetRepository(sl()));
-  sl.registerLazySingleton<UserRepository>(() => MockUserRepository());
-  sl.registerLazySingleton<AuthRepository>(() => MockAuthRepository());
-  sl.registerLazySingleton<DiscoveryRepository>(() => MockDiscoveryRepository());
+  // --- Repositories ---
+  sl.registerLazySingleton<AssetRepository>(() => AssetRepositoryImpl(sl()));
+  sl.registerLazySingleton<AuthRepository>(
+      () => AuthRepositoryImpl(sl<ApiClient>(), sl<TokenStorage>()));
+  sl.registerLazySingleton<UserRepository>(
+      () => UserRepositoryImpl(sl<ApiClient>(), sl<TokenStorage>()));
+  sl.registerLazySingleton<DiscoveryRepository>(
+      () => MockDiscoveryRepository());
 
-  // HiveSettingsRepository requires async init before use — created manually
-  // and registered after init() so the box is open before anything calls sl<SettingsRepository>().
+  // HiveSettingsRepository requires async init — created manually before registration.
   final settingsRepository = HiveSettingsRepository();
   await settingsRepository.init();
   sl.registerLazySingleton<SettingsRepository>(() => settingsRepository);
@@ -67,6 +85,7 @@ Future<void> init() async {
   // --- Use Cases (stateless, always singletons) ---
   sl.registerLazySingleton(() => GetAssetsUseCase(sl()));
   sl.registerLazySingleton(() => AddAssetUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteAssetUseCase(sl()));
   sl.registerLazySingleton(() => GetNetWorthHistoryUseCase(sl()));
   sl.registerLazySingleton(() => GetUserUseCase(sl()));
   sl.registerLazySingleton(() => UpdateUserUseCase(sl()));
@@ -74,6 +93,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RegisterUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
   sl.registerLazySingleton(() => GetAuthStatusUseCase(sl()));
+  sl.registerLazySingleton(() => GetCachedNameUseCase(sl()));
   sl.registerLazySingleton(() => GetMarketAssetsUseCase(sl()));
   sl.registerLazySingleton(() => GetThemeModeUseCase(sl()));
   sl.registerLazySingleton(() => SetThemeModeUseCase(sl()));
@@ -81,22 +101,18 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SetLocaleUseCase(sl()));
   sl.registerLazySingleton(() => GetBiometricsEnabledUseCase(sl()));
   sl.registerLazySingleton(() => SetBiometricsEnabledUseCase(sl()));
+  sl.registerLazySingleton(() => GetCurrencyUseCase(sl()));
+  sl.registerLazySingleton(() => SetCurrencyUseCase(sl()));
   sl.registerLazySingleton(() => BiometricService());
 
   // --- Global BLoCs (state must survive page navigation — singletons) ---
-  // AuthBloc: controls the entire auth gate.
-  // SettingsBloc: controls theme and locale for the whole app.
-  // AccountBloc: user profile is needed in AccountPage and SettingsPage simultaneously.
-  sl.registerLazySingleton(() => AuthBloc(sl(), sl(), sl(), sl()));
+  sl.registerLazySingleton(() => AuthBloc(sl(), sl(), sl(), sl(), sl()));
   sl.registerLazySingleton(
-      () => SettingsBloc(sl(), sl(), sl(), sl(), sl(), sl()));
+      () => SettingsBloc(sl(), sl(), sl(), sl(), sl(), sl(), sl(), sl()));
   sl.registerLazySingleton(() => AccountBloc(sl(), sl()));
 
   // --- Page-scoped BLoCs (fresh instance per page mount — factories) ---
-  // DashboardBloc: owns dashboard data, created by MainScaffold.
-  // DiscoveryBloc: owns market data, created on-demand in AssetsPage.
-  sl.registerFactory(() => DashboardBloc(sl(), sl(), sl()));
-  sl.registerFactory(
-      () => DiscoveryBloc(getMarketAssets: sl()));
+  sl.registerFactory(() => DashboardBloc(sl(), sl(), sl(), sl()));
+  sl.registerFactory(() => DiscoveryBloc(getMarketAssets: sl()));
   sl.registerFactory(() => PlaygroundBloc());
 }

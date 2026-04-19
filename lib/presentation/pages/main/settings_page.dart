@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,8 @@ import '../../../logic/blocs/settings/settings_event.dart';
 import '../../../logic/blocs/settings/settings_state.dart';
 import '../../../logic/blocs/account/account_bloc.dart';
 import '../../../logic/blocs/account/account_state.dart';
+import '../../../logic/blocs/auth/auth_bloc.dart';
+import '../../../logic/blocs/auth/auth_event.dart';
 import '../../../service_locator.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -64,18 +67,21 @@ class SettingsPage extends StatelessWidget {
               _buildVaultHeader(isDark, l10n),
               const SizedBox(height: 30),
               _buildSectionHeader(l10n.securitySection),
-              _buildSettingsTile(
-                context,
-                title: l10n.biometricLock,
-                subtitle: l10n.biometricSubtitle,
-                icon: Icons.fingerprint,
-                trailing: Switch.adaptive(
-                  value: settingsState.biometricsEnabled,
-                  onChanged: (value) =>
-                      _toggleBiometrics(context, value, l10n),
-                  activeThumbColor: const Color(0xFF2E3192),
+              if (!kIsWeb &&
+                  (defaultTargetPlatform == TargetPlatform.iOS ||
+                      defaultTargetPlatform == TargetPlatform.macOS))
+                _buildSettingsTile(
+                  context,
+                  title: l10n.biometricLock,
+                  subtitle: l10n.biometricSubtitle,
+                  icon: Icons.fingerprint,
+                  trailing: Switch.adaptive(
+                    value: settingsState.biometricsEnabled,
+                    onChanged: (value) =>
+                        _toggleBiometrics(context, value, l10n),
+                    activeThumbColor: const Color(0xFF2E3192),
+                  ),
                 ),
-              ),
               _buildSettingsTile(
                 context,
                 title: l10n.twoFactorAuth,
@@ -88,9 +94,18 @@ class SettingsPage extends StatelessWidget {
               _buildSettingsTile(
                 context,
                 title: l10n.primaryCurrency,
-                subtitle: _currencySubtitle(settingsState.locale),
+                subtitle: _currencySubtitle(settingsState.currency),
                 icon: Icons.payments_outlined,
                 onTap: () => _showCurrencyPicker(context, l10n),
+              ),
+              _buildSettingsTile(
+                context,
+                title: l10n.language,
+                subtitle: settingsState.locale.languageCode == 'pt'
+                    ? 'Português'
+                    : 'English',
+                icon: Icons.language,
+                onTap: () => _showLanguagePicker(context, l10n),
               ),
               _buildSettingsTile(
                 context,
@@ -130,6 +145,27 @@ class SettingsPage extends StatelessWidget {
                 onTap: () => HapticFeedback.lightImpact(),
               ),
               const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    context.read<AuthBloc>().add(LogoutRequested());
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  label: Text(
+                    l10n.signOut,
+                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               Center(
                 child: TextButton(
                   onPressed: () => HapticFeedback.lightImpact(),
@@ -146,14 +182,18 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  String _currencySubtitle(Locale locale) {
-    switch (locale.languageCode) {
-      case 'en':
+  String _currencySubtitle(String currency) {
+    switch (currency) {
+      case 'USD':
         return 'USD (\$)';
-      case 'pt':
+      case 'EUR':
+        return 'EUR (€)';
+      case 'BRL':
         return 'BRL (R\$)';
+      case 'BTC':
+        return 'BTC (₿)';
       default:
-        return locale.languageCode.toUpperCase();
+        return currency;
     }
   }
 
@@ -242,7 +282,7 @@ class SettingsPage extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) {
+      builder: (ctx) {
         return Container(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -258,24 +298,78 @@ class SettingsPage extends StatelessWidget {
                 HapticFeedback.lightImpact();
                 context
                     .read<SettingsBloc>()
-                    .add(const ChangeLanguage(Locale('en')));
-                Navigator.pop(context);
+                    .add(const ChangeCurrency('USD'));
+                Navigator.pop(ctx);
               }),
               _buildCurrencyItem('BRL', l10n.brlName, 'R\$', onTap: () {
                 HapticFeedback.lightImpact();
                 context
                     .read<SettingsBloc>()
-                    .add(const ChangeLanguage(Locale('pt')));
-                Navigator.pop(context);
+                    .add(const ChangeCurrency('BRL'));
+                Navigator.pop(ctx);
               }),
               _buildCurrencyItem('EUR', l10n.eurName, '€', onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.pop(context);
+                context
+                    .read<SettingsBloc>()
+                    .add(const ChangeCurrency('EUR'));
+                Navigator.pop(ctx);
               }),
               _buildCurrencyItem('BTC', l10n.btcName, '₿', onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.pop(context);
+                context
+                    .read<SettingsBloc>()
+                    .add(const ChangeCurrency('BTC'));
+                Navigator.pop(ctx);
               }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.language,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Text('🇺🇸', style: TextStyle(fontSize: 24)),
+                title: const Text('English',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context
+                      .read<SettingsBloc>()
+                      .add(const ChangeLanguage(Locale('en')));
+                  Navigator.pop(ctx);
+                },
+              ),
+              ListTile(
+                leading: const Text('🇧🇷', style: TextStyle(fontSize: 24)),
+                title: const Text('Português',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context
+                      .read<SettingsBloc>()
+                      .add(const ChangeLanguage(Locale('pt')));
+                  Navigator.pop(ctx);
+                },
+              ),
             ],
           ),
         );

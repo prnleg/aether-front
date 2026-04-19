@@ -14,6 +14,7 @@ import '../pages/main/settings_page.dart';
 import '../pages/assets/add_asset_page.dart';
 import '../pages/auth/login_page.dart';
 import '../pages/auth/register_page.dart';
+import '../pages/auth/resuming_session_page.dart';
 import '../../logic/blocs/discovery/discovery_bloc.dart';
 import '../../logic/blocs/playground/playground_bloc.dart';
 import '../../service_locator.dart';
@@ -60,14 +61,22 @@ class AppRouter {
     initialLocation: '/dashboard',
     refreshListenable: GoRouterRefreshStream(authBloc.stream),
     redirect: (context, state) {
-      final bool isAuthenticated = authBloc.state.status == AuthStatus.authenticated;
-      final bool isLoggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
+      final authState = authBloc.state;
+      final bool isAuthenticated = authState.status == AuthStatus.authenticated;
+      final bool isResumingSession = authState.isResumingSession;
+      final bool isLoggingIn = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
+      final bool isResuming = state.matchedLocation == '/resuming';
+
+      if (isResumingSession) {
+        return isResuming ? null : '/resuming';
+      }
 
       if (!isAuthenticated) {
         return isLoggingIn ? null : '/login';
       }
 
-      if (isLoggingIn) {
+      if (isLoggingIn || isResuming) {
         return '/dashboard';
       }
 
@@ -81,6 +90,10 @@ class AppRouter {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/resuming',
+        builder: (context, state) => const ResumingSessionPage(),
       ),
       ShellRoute(
         builder: (context, state, child) {

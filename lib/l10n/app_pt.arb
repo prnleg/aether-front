@@ -81,6 +81,8 @@
   "deleteAccount": "Deletar Conta & Dados",
   "vaultHeaderTitle": "Seus dados estão encriptados",
   "vaultHeaderSubtitle": "Aether usa AES-256 encryption para manter seus ativos privados.",
+  "language": "Idioma",
+  "selectLanguage": "Selecione o idioma",
   "selectCurrency": "Selecione sua moeda principal",
   "usdName": "Dolar Americano",
   "brlName": "Real Brasileiro",

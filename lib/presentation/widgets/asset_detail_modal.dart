@@ -1,8 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import '../../domain/models/asset_model.dart';
+import '../../logic/blocs/dashboard/dashboard_bloc.dart';
+import '../../logic/blocs/dashboard/dashboard_event.dart';
 import '../utils/asset_type_labels.dart';
 import 'dart:math' as math;
 import 'dart:ui';
@@ -531,13 +534,38 @@ class AssetDetailModal extends StatelessWidget {
           ),
           child: IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: () {
-              HapticFeedback.lightImpact();
-            },
+            onPressed: () => _confirmDelete(context),
           ),
         ),
       ],
     );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    HapticFeedback.lightImpact();
+    showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Remove asset'),
+        content: Text('Remove "${asset.name}" from your portfolio?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    ).then((confirmed) {
+      if (confirmed == true && context.mounted) {
+        context.read<DashboardBloc>().add(DeleteAsset(asset.id));
+        Navigator.of(context).pop(); // close the detail modal
+      }
+    });
   }
 
   IconData _getIconForType(AssetType type) {

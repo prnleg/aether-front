@@ -45,7 +45,17 @@ class _AssetsPageState extends State<AssetsPage> {
           const SizedBox(width: 8),
         ],
       ),
-      body: BlocBuilder<DashboardBloc, DashboardState>(
+      body: BlocConsumer<DashboardBloc, DashboardState>(
+        listener: (context, state) {
+          if (state is DashboardLoaded && state.operationError != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.operationError!),
+                backgroundColor: Colors.red.shade700,
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is DashboardLoading) {
             return const AssetsSkeleton();

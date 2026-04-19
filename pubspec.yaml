@@ -50,6 +50,7 @@ dependencies:
   shimmer: ^3.0.0
   local_auth: ^2.3.0
   font_awesome_flutter: ^10.8.0
+  dio: ^5.7.0
 
 dependency_overrides:
   path_provider_foundation: 2.4.0

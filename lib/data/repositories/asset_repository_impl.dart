@@ -2,10 +2,10 @@ import '../../domain/models/asset_model.dart';
 import '../../domain/repositories/asset_repository.dart';
 import '../datasources/asset_remote_data_source.dart';
 
-class MockAssetRepository implements AssetRepository {
+class AssetRepositoryImpl implements AssetRepository {
   final AssetRemoteDataSource _remoteDataSource;
 
-  MockAssetRepository(this._remoteDataSource);
+  AssetRepositoryImpl(this._remoteDataSource);
 
   @override
   Future<List<Asset>> getAssets() => _remoteDataSource.getAssets();
@@ -22,21 +22,19 @@ class MockAssetRepository implements AssetRepository {
     if (assets.isEmpty) return [];
 
     final days = assets.first.history.length;
-    final now = DateTime.now();
-    final List<HistoryPoint> netWorthHistory = [];
+    if (days == 0) return [];
 
-    for (int i = 0; i < days; i++) {
-      double dailySum = 0;
-      for (var asset in assets) {
-        if (i < asset.history.length) {
-          dailySum += asset.history[i].value;
-        }
-      }
-      netWorthHistory.add(HistoryPoint(
+    final now = DateTime.now();
+    return List.generate(days, (i) {
+      final dailySum = assets.fold<double>(
+        0.0,
+        (sum, asset) =>
+            sum + (i < asset.history.length ? asset.history[i].value : 0.0),
+      );
+      return HistoryPoint(
         date: now.subtract(Duration(days: (days - 1) - i)),
         value: dailySum,
-      ));
-    }
-    return netWorthHistory;
+      );
+    });
   }
 }

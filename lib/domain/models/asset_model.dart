@@ -71,6 +71,16 @@ class Asset extends Equatable {
   final List<AssetCorrelation> correlations;
   final List<AssetMilestone> milestones;
 
+  // Type-specific acquisition metadata — used when creating assets via the API.
+  // Only the fields relevant to the asset's type will be non-null.
+  final String? symbol;        // crypto: ticker symbol (e.g. "BTC")
+  final double? quantity;      // crypto: amount held
+  final String? marketHashName; // steam: item market identifier
+  final String? category;      // physical: item category
+  final String? brand;         // physical: brand or manufacturer
+  final String? condition;     // physical: item condition
+  final String currency;       // all types: currency code (default "USD")
+
   const Asset({
     required this.id,
     required this.name,
@@ -80,6 +90,13 @@ class Asset extends Equatable {
     this.history = const [],
     this.correlations = const [],
     this.milestones = const [],
+    this.symbol,
+    this.quantity,
+    this.marketHashName,
+    this.category,
+    this.brand,
+    this.condition,
+    this.currency = 'USD',
   });
 
   Asset copyWith({
@@ -91,6 +108,13 @@ class Asset extends Equatable {
     List<HistoryPoint>? history,
     List<AssetCorrelation>? correlations,
     List<AssetMilestone>? milestones,
+    String? symbol,
+    double? quantity,
+    String? marketHashName,
+    String? category,
+    String? brand,
+    String? condition,
+    String? currency,
   }) {
     return Asset(
       id: id ?? this.id,
@@ -101,6 +125,13 @@ class Asset extends Equatable {
       history: history ?? this.history,
       correlations: correlations ?? this.correlations,
       milestones: milestones ?? this.milestones,
+      symbol: symbol ?? this.symbol,
+      quantity: quantity ?? this.quantity,
+      marketHashName: marketHashName ?? this.marketHashName,
+      category: category ?? this.category,
+      brand: brand ?? this.brand,
+      condition: condition ?? this.condition,
+      currency: currency ?? this.currency,
     );
   }
 
@@ -126,5 +157,10 @@ class Asset extends Equatable {
       };
 
   @override
-  List<Object?> get props => [id, name, value, type, change24h, history, correlations, milestones];
+  List<Object?> get props => [
+        id, name, value, type, change24h,
+        history, correlations, milestones,
+        symbol, quantity, marketHashName,
+        category, brand, condition, currency,
+      ];
 }

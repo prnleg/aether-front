@@ -39,6 +39,7 @@ class DashboardLoaded extends DashboardState {
   final List<HistoryPoint> netWorthHistory;
   @override
   final TimeRange timeRange;
+  final String? operationError;
 
   const DashboardLoaded({
     required this.totalNetWorth,
@@ -46,6 +47,7 @@ class DashboardLoaded extends DashboardState {
     required this.assets,
     required this.netWorthHistory,
     this.timeRange = TimeRange.oneMonth,
+    this.operationError,
   });
 
   DashboardLoaded copyWith({
@@ -54,6 +56,7 @@ class DashboardLoaded extends DashboardState {
     List<Asset>? assets,
     List<HistoryPoint>? netWorthHistory,
     TimeRange? timeRange,
+    String? operationError,
   }) {
     return DashboardLoaded(
       totalNetWorth: totalNetWorth ?? this.totalNetWorth,
@@ -61,11 +64,12 @@ class DashboardLoaded extends DashboardState {
       assets: assets ?? this.assets,
       netWorthHistory: netWorthHistory ?? this.netWorthHistory,
       timeRange: timeRange ?? this.timeRange,
+      operationError: operationError,
     );
   }
 
   @override
-  List<Object?> get props => [totalNetWorth, dailyProfit, assets, netWorthHistory, timeRange];
+  List<Object?> get props => [totalNetWorth, dailyProfit, assets, netWorthHistory, timeRange, operationError];
 }
 
 class DashboardError extends DashboardState {

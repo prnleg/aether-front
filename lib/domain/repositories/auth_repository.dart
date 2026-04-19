@@ -12,4 +12,6 @@ abstract class AuthRepository {
   Future<UserModel> register(String name, String email, String password);
   Future<void> logout();
   Future<String?> getToken();
+  /// Returns the cached name from local storage — no network call.
+  String? getCachedName();
 }

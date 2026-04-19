@@ -21,8 +21,38 @@ class NetWorthGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (history.isEmpty) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context)!;
+
+    if (history.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showHeader) ...[
+            Text(l10n.totalNetWorth,
+                style: const TextStyle(color: Colors.white70, fontSize: 14)),
+            const SizedBox(height: 4),
+            Text(
+              '\$${totalAmount.toStringAsFixed(2)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 15),
+          ],
+          const Expanded(
+            child: Center(
+              child: Text(
+                'Add assets to see your net worth chart',
+                style: TextStyle(color: Colors.white54, fontSize: 13),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     const minX = 0.0;
     final maxX = (history.length - 1).toDouble();

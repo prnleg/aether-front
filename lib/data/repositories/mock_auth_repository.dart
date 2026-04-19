@@ -46,4 +46,7 @@ class MockAuthRepository implements AuthRepository {
   Future<String?> getToken() async {
     return _inMemoryStorage[_tokenKey];
   }
+
+  @override
+  String? getCachedName() => null;
 }

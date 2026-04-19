@@ -4,6 +4,7 @@ import '../../domain/models/asset_model.dart';
 abstract class AssetRemoteDataSource {
   Future<List<Asset>> getAssets();
   Future<void> addAsset(Asset asset);
+  Future<void> deleteAsset(String assetId);
 }
 
 class MockAssetRemoteDataSource implements AssetRemoteDataSource {
@@ -118,6 +119,11 @@ class MockAssetRemoteDataSource implements AssetRemoteDataSource {
   @override
   Future<void> addAsset(Asset asset) async {
     await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  @override
+  Future<void> deleteAsset(String assetId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
   }
 
   List<HistoryPoint> _generateHistory(
