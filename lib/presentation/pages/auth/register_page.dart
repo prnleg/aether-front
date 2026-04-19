@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aether/l10n/app_localizations.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
 import '../../../logic/blocs/auth/auth_state.dart';
@@ -28,9 +29,10 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _handleRegister() {
+    final l10n = AppLocalizations.of(context)!;
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match.')),
+        SnackBar(content: Text(l10n.passwordsDoNotMatch)),
       );
       return;
     }
@@ -48,6 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final bool isMacOS = theme.platform == TargetPlatform.macOS;
+    final l10n = AppLocalizations.of(context)!;
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -93,33 +96,32 @@ class _RegisterPageState extends State<RegisterPage> {
                       'assets/images/logo.png',
                       height: 60,
                       width: 60,
-                      // color: colorScheme.primary, // Optional: keep primary color if logo is monochromatic
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Create Account',
+                      l10n.createAccount,
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: colorScheme.primary,
                       ),
                     ),
-                    const Text(
-                      'Start your financial journey.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    Text(
+                      l10n.financialJourney,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 32),
                     _buildTextField(
                       context: context,
                       controller: _nameController,
-                      label: 'Full Name',
+                      label: l10n.fullName,
                       icon: Icons.person_outline,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       context: context,
                       controller: _emailController,
-                      label: 'Email Address',
+                      label: l10n.emailAddress,
                       icon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -127,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     _buildTextField(
                       context: context,
                       controller: _passwordController,
-                      label: 'Password',
+                      label: l10n.password,
                       icon: Icons.lock_outline,
                       isPassword: true,
                     ),
@@ -135,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     _buildTextField(
                       context: context,
                       controller: _confirmPasswordController,
-                      label: 'Confirm Password',
+                      label: l10n.confirmPassword,
                       icon: Icons.lock_reset,
                       isPassword: true,
                     ),
@@ -164,11 +166,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text(
-                                    'Register',
-                                    style: TextStyle(
+                                : Text(
+                                    l10n.register,
+                                    style: const TextStyle(
                                         fontSize: 18,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
                           ),
                         );
@@ -178,12 +181,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Already have an account?"),
+                        Text(l10n.alreadyHaveAccount),
                         TextButton(
                           onPressed: () => context.pop(),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          child: Text(
+                            l10n.login,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],

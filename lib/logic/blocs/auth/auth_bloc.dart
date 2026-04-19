@@ -1,12 +1,25 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import '../../../domain/repositories/auth_repository.dart';
+import '../../../domain/usecases/get_auth_status_use_case.dart';
+import '../../../domain/usecases/login_use_case.dart';
+import '../../../domain/usecases/logout_use_case.dart';
+import '../../../domain/usecases/register_use_case.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepository _authRepository;
+  final GetAuthStatusUseCase _getAuthStatus;
+  final LoginUseCase _login;
+  final RegisterUseCase _register;
+  final LogoutUseCase _logout;
 
-  AuthBloc(this._authRepository) : super(const AuthState()) {
+  AuthBloc(
+    this._getAuthStatus,
+    this._login,
+    this._register,
+    this._logout,
+  ) : super(const AuthState()) {
     on<AuthStatusChanged>(_onAuthStatusChanged);
     on<LoginRequested>(_onLoginRequested);
     on<RegisterRequested>(_onRegisterRequested);
@@ -19,7 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthStatusChanged event,
     Emitter<AuthState> emit,
   ) async {
-    final status = await _authRepository.getAuthStatus();
+    final status = await _getAuthStatus.execute();
     if (status == AuthStatus.authenticated) {
       emit(state.copyWith(
           status: AuthStatus.authenticated, isLoading: false, error: null));
@@ -35,9 +48,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      await _authRepository.login(event.email, event.password);
+      await _login.execute(event.email, event.password);
       add(AuthStatusChanged());
     } catch (e) {
+      debugPrint(e.toString());
       emit(state.copyWith(
           isLoading: false,
           error: 'Login failed. Please check your credentials.'));
@@ -50,9 +64,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      await _authRepository.register(event.name, event.email, event.password);
+      await _register.execute(event.name, event.email, event.password);
       add(AuthStatusChanged());
     } catch (e) {
+      debugPrint(e.toString());
       emit(state.copyWith(
           isLoading: false, error: 'Registration failed. Please try again.'));
     }
@@ -62,7 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    await _authRepository.logout();
+    await _logout.execute();
     emit(const AuthState(status: AuthStatus.unauthenticated));
   }
 }

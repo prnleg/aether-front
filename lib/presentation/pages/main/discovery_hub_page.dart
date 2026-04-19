@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:aether/l10n/app_localizations.dart';
 import '../../../domain/models/market_asset.dart';
 import '../../../logic/blocs/discovery/discovery_bloc.dart';
 import '../../../logic/blocs/discovery/discovery_event.dart';
 import '../../../logic/blocs/discovery/discovery_state.dart';
+import '../../widgets/skeleton_loader.dart';
+import '../../utils/market_asset_icons.dart';
 
 class DiscoveryHubPage extends StatefulWidget {
   const DiscoveryHubPage({super.key});
@@ -32,10 +35,11 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Discovery Hub', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.discoveryHub, style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
       ),
       body: Column(
@@ -46,7 +50,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
               controller: _searchController,
               onChanged: (val) => context.read<DiscoveryBloc>().add(SearchDiscoveryAssets(val)),
               decoration: InputDecoration(
-                hintText: 'Search assets (e.g. Dragon Lore, BTC)...',
+                hintText: l10n.searchDiscovery,
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: isDark ? Colors.white10 : Colors.grey[100],
@@ -61,9 +65,9 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
             child: BlocBuilder<DiscoveryBloc, DiscoveryState>(
               builder: (context, state) {
                 if (state.status == DiscoveryStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const DiscoverySkeleton();
                 } else if (state.status == DiscoveryStatus.failure) {
-                  return const Center(child: Text('Failed to load assets.'));
+                  return Center(child: Text(l10n.failedToLoadAssets));
                 } else if (state.status == DiscoveryStatus.success) {
                   final filteredAssets = state.filteredAssets;
                   return ListView.builder(
@@ -71,7 +75,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
                     itemCount: filteredAssets.length,
                     itemBuilder: (context, index) {
                       final asset = filteredAssets[index];
-                      return _buildMarketAssetCard(asset, isDark);
+                      return _buildMarketAssetCard(asset, isDark, l10n);
                     },
                   );
                 }
@@ -84,7 +88,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
     );
   }
 
-  Widget _buildMarketAssetCard(MarketAsset asset, bool isDark) {
+  Widget _buildMarketAssetCard(MarketAsset asset, bool isDark, AppLocalizations l10n) {
     final isPositive = asset.change >= 0;
     
     return Container(
@@ -108,7 +112,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
             children: [
               CircleAvatar(
                 backgroundColor: const Color(0xFF2E3192).withValues(alpha: 0.1),
-                child: Icon(asset.icon, color: const Color(0xFF2E3192), size: 18),
+                child: Icon(marketAssetIcon(asset.type), color: const Color(0xFF2E3192), size: 18),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -116,7 +120,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(asset.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text(asset.type, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text(_getTranslatedType(asset.type, l10n), style: const TextStyle(color: Colors.grey, fontSize: 12)),
                   ],
                 ),
               ),
@@ -136,7 +140,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildHealthIndicator(asset.health),
+              _buildHealthIndicator(asset.health, l10n),
               SizedBox(
                 height: 30,
                 width: 100,
@@ -174,7 +178,7 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text('Add', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(l10n.add, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -183,13 +187,25 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
     );
   }
 
-  Widget _buildHealthIndicator(String health) {
+  Widget _buildHealthIndicator(String health, AppLocalizations l10n) {
     Color color;
+    String label;
     switch (health) {
-      case 'Bullish': color = Colors.green; break;
-      case 'Stable': color = Colors.blue; break;
-      case 'Volatile': color = Colors.orange; break;
-      default: color = Colors.grey;
+      case 'Bullish': 
+        color = Colors.green;
+        label = l10n.bullish;
+        break;
+      case 'Stable': 
+        color = Colors.blue;
+        label = l10n.stable;
+        break;
+      case 'Volatile': 
+        color = Colors.orange;
+        label = l10n.volatile;
+        break;
+      default: 
+        color = Colors.grey;
+        label = health;
     }
     
     return Container(
@@ -207,9 +223,24 @@ class _DiscoveryHubPageState extends State<DiscoveryHubPage> {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
-          Text(health, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
       ),
     );
+  }
+
+  String _getTranslatedType(String type, AppLocalizations l10n) {
+    switch (type) {
+      case 'CS:GO Skin':
+        return l10n.csgoSkin;
+      case 'Crypto':
+        return l10n.crypto;
+      case 'NFT':
+        return l10n.nft;
+      case 'Stock':
+        return l10n.stock;
+      default:
+        return type;
+    }
   }
 }

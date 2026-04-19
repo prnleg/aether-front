@@ -6,6 +6,7 @@ import '../../../logic/blocs/account/account_event.dart';
 import '../../../logic/blocs/account/account_state.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
+import '../../widgets/skeleton_loader.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -53,7 +54,7 @@ class _AccountPageState extends State<AccountPage> {
         },
         builder: (context, state) {
           if (state is AccountLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const AccountSkeleton();
           } else if (state is AccountLoaded) {
             return ListView(
               padding: const EdgeInsets.all(24),

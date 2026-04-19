@@ -1,16 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../logic/blocs/auth/auth_bloc.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../pages/main_scaffold.dart';
 import '../pages/main/dashboard_page.dart';
 import '../pages/main/assets_page.dart';
+import '../pages/main/discovery_hub_page.dart';
 import '../pages/main/playground_page.dart';
 import '../pages/main/account_page.dart';
 import '../pages/main/settings_page.dart';
+import '../pages/assets/add_asset_page.dart';
 import '../pages/auth/login_page.dart';
 import '../pages/auth/register_page.dart';
+import '../../logic/blocs/discovery/discovery_bloc.dart';
+import '../../logic/blocs/playground/playground_bloc.dart';
+import '../../service_locator.dart';
 
 class AppRouter {
   final AuthBloc authBloc;
@@ -18,7 +24,7 @@ class AppRouter {
 
   AppRouter(this.authBloc);
 
-  static int _getSelectedIndex(String location) {
+  static int getSelectedIndex(String location) {
     if (location.startsWith('/dashboard')) return 0;
     if (location.startsWith('/assets')) return 1;
     if (location.startsWith('/playground')) return 2;
@@ -29,7 +35,7 @@ class AppRouter {
 
   static Page<dynamic> _buildPageWithTransition(
       BuildContext context, GoRouterState state, Widget child) {
-    final int newIndex = _getSelectedIndex(state.matchedLocation);
+    final int newIndex = getSelectedIndex(state.matchedLocation);
     final bool isReverse = newIndex < _previousIndex;
     _previousIndex = newIndex;
 
@@ -96,13 +102,29 @@ class AppRouter {
               state,
               const AssetsPage(),
             ),
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) => const AddAssetPage(),
+              ),
+              GoRoute(
+                path: 'discovery',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => sl<DiscoveryBloc>(),
+                  child: const DiscoveryHubPage(),
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: '/playground',
             pageBuilder: (context, state) => _buildPageWithTransition(
               context,
               state,
-              const PlaygroundPage(),
+              BlocProvider(
+                create: (_) => sl<PlaygroundBloc>(),
+                child: const PlaygroundPage(),
+              ),
             ),
           ),
           GoRoute(

@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
+import '../../../logic/blocs/playground/playground_bloc.dart';
+import '../../../logic/blocs/playground/playground_event.dart';
+import '../../../logic/blocs/playground/playground_state.dart';
 
-class PlaygroundPage extends StatefulWidget {
+class PlaygroundPage extends StatelessWidget {
   const PlaygroundPage({super.key});
-
-  @override
-  State<PlaygroundPage> createState() => _PlaygroundPageState();
-}
-
-class _PlaygroundPageState extends State<PlaygroundPage> {
-  double _sellCSGOSkins = 0.0;
-  double _buyCrypto = 0.0;
-  double _projectedROI = 15.4;
-
-  void _recalculate() {
-    // Mock simulation logic
-    setState(() {
-      _projectedROI = 15.4 - (_sellCSGOSkins * 0.1) + (_buyCrypto * 0.2);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,76 +19,90 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
         title: Text(l10n.playground,
             style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.whatIfSimulator,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.simulatorDesc,
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 32),
-            _buildSimulationCard(context, isDark, l10n),
-            const SizedBox(height: 32),
-            Text(
-              l10n.scenarioParameters,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            _buildSlider(
-              l10n.sellSkins,
-              _sellCSGOSkins,
-              (val) {
-                setState(() => _sellCSGOSkins = val);
-                _recalculate();
-              },
-              Colors.red,
-            ),
-            const SizedBox(height: 24),
-            _buildSlider(
-              l10n.buyCrypto,
-              _buyCrypto,
-              (val) {
-                setState(() => _buyCrypto = val);
-                _recalculate();
-              },
-              Colors.green,
-            ),
-            const SizedBox(height: 40),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(l10n.simulationSaved)),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E3192),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+      body: BlocConsumer<PlaygroundBloc, PlaygroundState>(
+        listener: (context, state) {
+          if (state.scenarioSaved) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.simulationSaved)),
+            );
+          }
+        },
+        builder: (context, state) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.whatIfSimulator,
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                child: Text(l10n.saveScenario,
-                    style:
-                        const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.simulatorDesc,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 32),
+                _buildSimulationCard(context, isDark, l10n, state.projectedROI),
+                const SizedBox(height: 32),
+                Text(
+                  l10n.scenarioParameters,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _buildSlider(
+                  context,
+                  l10n.sellSkins,
+                  state.sellSkinsPercent,
+                  (val) => context
+                      .read<PlaygroundBloc>()
+                      .add(UpdateSellSkinsPercent(val)),
+                  Colors.red,
+                ),
+                const SizedBox(height: 24),
+                _buildSlider(
+                  context,
+                  l10n.buyCrypto,
+                  state.buyCryptoPercent,
+                  (val) => context
+                      .read<PlaygroundBloc>()
+                      .add(UpdateBuyCryptoPercent(val)),
+                  Colors.green,
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        context.read<PlaygroundBloc>().add(SaveScenario()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2E3192),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: Text(l10n.saveScenario,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSimulationCard(BuildContext context, bool isDark, AppLocalizations l10n) {
+  Widget _buildSimulationCard(
+    BuildContext context,
+    bool isDark,
+    AppLocalizations l10n,
+    double projectedROI,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -129,7 +131,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${_projectedROI >= 0 ? '+' : ''}${_projectedROI.toStringAsFixed(1)}%',
+            '${projectedROI >= 0 ? '+' : ''}${projectedROI.toStringAsFixed(1)}%',
             style: TextStyle(
               color: Colors.white,
               fontSize: 48,
@@ -147,7 +149,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
           Text(
             l10n.estimatedImpact,
             style: const TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -155,7 +159,12 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   }
 
   Widget _buildSlider(
-      String label, double value, ValueChanged<double> onChanged, Color color) {
+    BuildContext context,
+    String label,
+    double value,
+    ValueChanged<double> onChanged,
+    Color color,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

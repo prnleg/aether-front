@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import '../../domain/models/asset_model.dart';
+import '../utils/asset_type_labels.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -108,20 +110,23 @@ class AssetDetailModal extends StatelessWidget {
   Widget _buildHeader(BuildContext context, bool isPositive) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardTheme.color ?? Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-              )
-            ],
+        Hero(
+          tag: 'asset_icon_${asset.id}',
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color ?? Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                )
+              ],
+            ),
+            child: Icon(_getIconForType(asset.type),
+                size: 40, color: const Color(0xFF2E3192)),
           ),
-          child: Icon(_getIconForType(asset.type),
-              size: 40, color: const Color(0xFF2E3192)),
         ),
         const SizedBox(height: 16),
         Text(
@@ -129,7 +134,7 @@ class AssetDetailModal extends StatelessWidget {
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         Text(
-          asset.typeName,
+          assetTypeLabel(asset.type, AppLocalizations.of(context)!),
           style: const TextStyle(fontSize: 14, color: Colors.grey),
         ),
         const SizedBox(height: 20),
@@ -220,6 +225,7 @@ class AssetDetailModal extends StatelessWidget {
   Widget _buildPortfolioWeighting(BuildContext context) {
     final weight = (asset.value / (totalNetWorth ?? 1)) * 100;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -264,9 +270,9 @@ class AssetDetailModal extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Portfolio Weight',
-                  style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.portfolioWeight,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -275,7 +281,7 @@ class AssetDetailModal extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  weight > 50 ? 'High Concentration Risk' : (weight > 20 ? 'Moderate Exposure' : 'Well Diversified'),
+                  weight > 50 ? l10n.highConcentrationRisk : (weight > 20 ? l10n.exposureModerate : l10n.diversified),
                   style: TextStyle(
                     fontSize: 12, 
                     color: weight > 50 ? Colors.red : (weight > 20 ? Colors.orange : Colors.green),
@@ -291,12 +297,13 @@ class AssetDetailModal extends StatelessWidget {
   }
 
   Widget _buildDeepDiveGrid(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Deep Dive Analysis',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Text(
+          l10n.deepDiveAnalysis,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
         Row(
@@ -319,6 +326,7 @@ class AssetDetailModal extends StatelessWidget {
 
   Widget _buildVolatilityGauge(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     // Mock volatility value
     final double volatility = 0.65; // 0.0 to 1.0
 
@@ -331,8 +339,8 @@ class AssetDetailModal extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text('Volatility Index',
-              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(l10n.volatilityIndex,
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 10),
           SizedBox(
             height: 80,
@@ -348,7 +356,7 @@ class AssetDetailModal extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            volatility > 0.7 ? 'High' : (volatility > 0.4 ? 'Medium' : 'Low'),
+            volatility > 0.7 ? l10n.high : (volatility > 0.4 ? l10n.medium : l10n.low),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
@@ -359,6 +367,7 @@ class AssetDetailModal extends StatelessWidget {
   Widget _buildCorrelationList(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final correlations = asset.correlations;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -370,12 +379,12 @@ class AssetDetailModal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Correlations',
-              style: TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(l10n.correlations,
+              style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 10),
           if (correlations.isEmpty)
-            const Text('No correlations available',
-                style: TextStyle(fontSize: 11, color: Colors.grey))
+            Text(l10n.noCorrelations,
+                style: const TextStyle(fontSize: 11, color: Colors.grey))
           else
             ...correlations.map((corr) => Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
@@ -414,17 +423,18 @@ class AssetDetailModal extends StatelessWidget {
 
   Widget _buildHistoricalTimeline(BuildContext context) {
     final milestones = asset.milestones;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Historical Journey',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Text(
+          l10n.historicalJourney,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
         if (milestones.isEmpty)
-          const Text('No historical milestones available', style: TextStyle(color: Colors.grey, fontSize: 13))
+          Text(l10n.noMilestones, style: const TextStyle(color: Colors.grey, fontSize: 13))
         else
           ...milestones.asMap().entries.map((entry) {
             final index = entry.key;
@@ -474,7 +484,7 @@ class AssetDetailModal extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(top: 4.0),
                               child: Text(
-                                'What if you sold here? +\$${(asset.value * 0.4).toStringAsFixed(2)} extra',
+                                l10n.sellHypothetical('+\$${(asset.value * 0.4).toStringAsFixed(2)}'),
                                 style: const TextStyle(
                                     fontSize: 11,
                                     color: Colors.orange,
@@ -499,7 +509,9 @@ class AssetDetailModal extends StatelessWidget {
       children: [
         Expanded(
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              HapticFeedback.lightImpact();
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2E3192),
               foregroundColor: Colors.white,
@@ -519,7 +531,9 @@ class AssetDetailModal extends StatelessWidget {
           ),
           child: IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: () {},
+            onPressed: () {
+              HapticFeedback.lightImpact();
+            },
           ),
         ),
       ],

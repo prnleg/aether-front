@@ -97,6 +97,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailAddress => 'Email Address';
 
   @override
+  String get password => 'Password';
+
+  @override
   String get saveChanges => 'Save Changes';
 
   @override
@@ -271,4 +274,105 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diversified => 'Well Diversified';
+
+  @override
+  String get failedToLoadAssets => 'Failed to load assets.';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get bullish => 'Bullish';
+
+  @override
+  String get stable => 'Stable';
+
+  @override
+  String get volatile => 'Volatile';
+
+  @override
+  String get csgoSkin => 'CS:GO Skin';
+
+  @override
+  String get crypto => 'Crypto';
+
+  @override
+  String get nft => 'NFT';
+
+  @override
+  String get stock => 'Stock';
+
+  @override
+  String get inventory => 'Inventory';
+
+  @override
+  String get collectible => 'Collectible';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get unifiedAssets => 'Your assets, unified.';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get financialJourney => 'Start your financial journey.';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get highConcentrationRisk => 'High Concentration Risk';
+
+  @override
+  String get deepDiveAnalysis => 'Deep Dive Analysis';
+
+  @override
+  String get volatilityIndex => 'Volatility Index';
+
+  @override
+  String get high => 'High';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get correlations => 'Correlations';
+
+  @override
+  String get noCorrelations => 'No correlations available';
+
+  @override
+  String get historicalJourney => 'Historical Journey';
+
+  @override
+  String get noMilestones => 'No historical milestones available';
+
+  @override
+  String sellHypothetical(Object amount) {
+    return 'What if you sold here? $amount extra';
+  }
 }

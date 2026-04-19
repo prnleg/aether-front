@@ -127,19 +127,4 @@ class Asset extends Equatable {
 
   @override
   List<Object?> get props => [id, name, value, type, change24h, history, correlations, milestones];
-
-  String get typeName {
-    switch (type) {
-      case AssetType.crypto:
-        return 'Crypto';
-      case AssetType.inventory:
-        return 'Inventory';
-      case AssetType.collectible:
-        return 'Collectible';
-      case AssetType.cash:
-        return 'Cash';
-      case AssetType.stock:
-        return 'Stock';
-    }
-  }
 }

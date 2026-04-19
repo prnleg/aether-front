@@ -83,3 +83,81 @@ class DashboardSkeleton extends StatelessWidget {
     );
   }
 }
+
+class AccountSkeleton extends StatelessWidget {
+  const AccountSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(24.0),
+      children: [
+        const Center(
+          child: SkeletonLoader(
+            width: 120,
+            height: 120,
+            borderRadius: BorderRadius.all(Radius.circular(60)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Center(child: SkeletonLoader(width: 150, height: 24)),
+        const SizedBox(height: 8),
+        const Center(child: SkeletonLoader(width: 200, height: 16)),
+        const SizedBox(height: 40),
+        const SkeletonLoader(width: 150, height: 24),
+        const SizedBox(height: 15),
+        const SkeletonLoader(width: double.infinity, height: 200, borderRadius: BorderRadius.all(Radius.circular(20))),
+        const SizedBox(height: 30),
+        const SkeletonLoader(width: 100, height: 24),
+        const SizedBox(height: 15),
+        const SkeletonLoader(width: double.infinity, height: 150, borderRadius: BorderRadius.all(Radius.circular(20))),
+      ],
+    );
+  }
+}
+
+class DiscoverySkeleton extends StatelessWidget {
+  const DiscoverySkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return const Padding(
+          padding: EdgeInsets.only(bottom: 16.0),
+          child: SkeletonLoader(
+            width: double.infinity,
+            height: 120,
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class AssetsSkeleton extends StatelessWidget {
+  const AssetsSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20.0),
+      children: [
+        const SkeletonLoader(width: double.infinity, height: 60, borderRadius: BorderRadius.all(Radius.circular(16))),
+        const SizedBox(height: 20),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 0.8,
+          children: List.generate(6, (index) => const SkeletonLoader(width: double.infinity, height: 150, borderRadius: BorderRadius.all(Radius.circular(20)))),
+        ),
+      ],
+    );
+  }
+}

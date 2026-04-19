@@ -20,3 +20,11 @@ class ChangeLanguage extends SettingsEvent {
 }
 
 class LoadSettings extends SettingsEvent {}
+
+class BiometricToggled extends SettingsEvent {
+  final bool enabled;
+  const BiometricToggled(this.enabled);
+
+  @override
+  List<Object> get props => [enabled];
+}

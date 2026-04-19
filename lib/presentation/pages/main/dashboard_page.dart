@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -8,64 +9,19 @@ import 'package:animations/animations.dart';
 import '../../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../../logic/blocs/dashboard/dashboard_event.dart';
 import '../../../logic/blocs/dashboard/dashboard_state.dart';
-import '../../../logic/blocs/settings/settings_bloc.dart';
-import '../../../logic/blocs/settings/settings_event.dart';
-import '../../../logic/blocs/settings/settings_state.dart';
 import '../../../domain/models/asset_model.dart';
 import '../../widgets/net_worth_graph.dart';
 import '../../widgets/asset_detail_modal.dart';
 import '../../widgets/skeleton_loader.dart';
+import '../../utils/asset_type_labels.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(l10n.dashboard,
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        actions: [
-          BlocBuilder<SettingsBloc, SettingsState>(
-            builder: (context, state) {
-              return IconButton(
-                icon: Icon(state.themeMode == ThemeMode.light
-                    ? Icons.dark_mode_outlined
-                    : Icons.light_mode_outlined),
-                onPressed: () =>
-                    context.read<SettingsBloc>().add(ToggleTheme()),
-              );
-            },
-          ),
-          PopupMenuButton<Locale>(
-            icon: const Icon(Icons.language),
-            onSelected: (Locale locale) {
-              context.read<SettingsBloc>().add(ChangeLanguage(locale));
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: Locale('en'),
-                child: Text('English'),
-              ),
-              const PopupMenuItem(
-                value: Locale('pt'),
-                child: Text('Português'),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: const DashboardView(),
+    return const Scaffold(
+      body: DashboardView(),
     );
   }
 }
@@ -86,48 +42,109 @@ class DashboardView extends StatelessWidget {
             onRefresh: () async {
               context.read<DashboardBloc>().add(RefreshDashboard());
             },
-            child: ListView(
-              padding: const EdgeInsets.all(20.0),
-              children: [
-                NetWorthGraph(
-                  history: state.netWorthHistory,
-                  totalAmount: state.totalNetWorth,
-                  timeRange: state.timeRange,
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 340,
+                  pinned: true,
+                  backgroundColor: const Color(0xFF2E3192),
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isCollapsed = constraints.biggest.height <=
+                            kToolbarHeight +
+                                MediaQuery.of(context).padding.top +
+                                40;
+                        return AnimatedOpacity(
+                          duration: const Duration(milliseconds: 200),
+                          opacity: isCollapsed ? 1.0 : 0.0,
+                          child: Text(
+                            'Total: \$${state.totalNetWorth.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.white),
+                          ),
+                        );
+                      },
+                    ),
+                    background: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF2E3192), Color(0xFF1BFFFF)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      padding: EdgeInsets.only(
+                        top:
+                            MediaQuery.of(context).padding.top + kToolbarHeight,
+                        left: 20,
+                        right: 20,
+                        bottom: 30,
+                      ),
+                      child: NetWorthGraph(
+                        history: state.netWorthHistory,
+                        totalAmount: state.totalNetWorth,
+                        timeRange: state.timeRange,
+                      ),
+                    ),
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.notifications_none,
+                          color: Colors.white),
+                      onPressed: () => HapticFeedback.lightImpact(),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                 ),
-                const SizedBox(height: 15),
-                _buildRangeSelector(context, state.timeRange, l10n),
-                const SizedBox(height: 30),
-                _buildSectionHeader(context, l10n.portfolioStats, true),
-                const SizedBox(height: 15),
-                _buildStatsGrid(context, state),
-                const SizedBox(height: 30),
-                _buildSectionHeader(context, l10n.yourAssets, false),
-                const SizedBox(height: 15),
-                MasonryGridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: state.assets.length,
-                  itemBuilder: (context, index) {
-                    final asset = state.assets[index];
-                    final bool isBigMover = asset.change24h.abs() > 5.0;
+                SliverPadding(
+                  padding: const EdgeInsets.all(20.0),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _buildRangeSelector(context, state.timeRange, l10n),
+                      const SizedBox(height: 30),
+                      _buildSectionHeader(context, l10n.portfolioStats, true),
+                      const SizedBox(height: 15),
+                      _buildStatsGrid(context, state),
+                      const SizedBox(height: 30),
+                      _buildSectionHeader(context, l10n.yourAssets, false),
+                      const SizedBox(height: 15),
+                      MasonryGridView.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.assets.length,
+                        itemBuilder: (context, index) {
+                          final asset = state.assets[index];
+                          final bool isBigMover = asset.change24h.abs() > 5.0;
 
-                    return OpenContainer(
-                      transitionDuration: const Duration(milliseconds: 500),
-                      openElevation: 0,
-                      closedElevation: 0,
-                      closedShape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      closedColor: Colors.transparent,
-                      openColor: Theme.of(context).scaffoldBackgroundColor,
-                      openBuilder: (context, action) =>
-                          AssetDetailModal(asset: asset, totalNetWorth: state.totalNetWorth),
-                      closedBuilder: (context, action) =>
-                          _buildPulseAssetCard(context, asset, isBigMover),
-                    );
-                  },
+                          return OpenContainer(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            openElevation: 0,
+                            closedElevation: 0,
+                            closedShape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            closedColor: Colors.transparent,
+                            openColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            openBuilder: (context, action) => AssetDetailModal(
+                                asset: asset,
+                                totalNetWorth: state.totalNetWorth),
+                            closedBuilder: (context, action) =>
+                                _buildPulseAssetCard(
+                                    context, asset, isBigMover),
+                          );
+                        },
+                      ),
+                    ]),
+                  ),
                 ),
               ],
             ),
@@ -171,14 +188,18 @@ class DashboardView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? Colors.white10 : const Color(0xFFF5F7FA),
-                  borderRadius: BorderRadius.circular(10),
+              Hero(
+                tag: 'asset_icon_${asset.id}',
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color:
+                        isDarkMode ? Colors.white10 : const Color(0xFFF5F7FA),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(_getIconForType(asset.type),
+                      size: 18, color: const Color(0xFF2E3192)),
                 ),
-                child: Icon(_getIconForType(asset.type),
-                    size: 18, color: const Color(0xFF2E3192)),
               ),
               if (isBigMover)
                 Container(
@@ -208,7 +229,7 @@ class DashboardView extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           Text(
-            asset.typeName,
+            assetTypeLabel(asset.type, AppLocalizations.of(context)!),
             style: const TextStyle(color: Colors.grey, fontSize: 11),
           ),
           const SizedBox(height: 12),
@@ -288,10 +309,12 @@ class DashboardView extends StatelessWidget {
               selected: isSelected,
               onSelected: (selected) {
                 if (selected) {
+                  HapticFeedback.lightImpact();
                   context.read<DashboardBloc>().add(ChangeTimeRange(range));
                 }
               },
               selectedColor: const Color(0xFF2E3192),
+              checkmarkColor: Colors.white,
               labelStyle: TextStyle(
                 color: isSelected
                     ? Colors.white
@@ -351,7 +374,8 @@ class DashboardView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final assets = state.assets;
     final dailyProfit = state.dailyProfit;
-    final dailyProfitStr = '${dailyProfit >= 0 ? '+' : ''}\$${dailyProfit.abs().toStringAsFixed(2)}';
+    final dailyProfitStr =
+        '${dailyProfit >= 0 ? '+' : ''}\$${dailyProfit.abs().toStringAsFixed(2)}';
 
     return LayoutBuilder(
       builder: (context, constraints) {

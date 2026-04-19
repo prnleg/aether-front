@@ -1,13 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/repositories/discovery_repository.dart';
+import '../../../domain/usecases/get_market_assets_use_case.dart';
 import 'discovery_event.dart';
 import 'discovery_state.dart';
 
 class DiscoveryBloc extends Bloc<DiscoveryEvent, DiscoveryState> {
-  final DiscoveryRepository _repository;
+  final GetMarketAssetsUseCase _getMarketAssets;
 
-  DiscoveryBloc({required DiscoveryRepository repository})
-      : _repository = repository,
+  DiscoveryBloc({required GetMarketAssetsUseCase getMarketAssets})
+      : _getMarketAssets = getMarketAssets,
         super(const DiscoveryState()) {
     on<FetchDiscoveryAssets>(_onFetchDiscoveryAssets);
     on<SearchDiscoveryAssets>(_onSearchDiscoveryAssets);
@@ -19,13 +20,14 @@ class DiscoveryBloc extends Bloc<DiscoveryEvent, DiscoveryState> {
   ) async {
     emit(state.copyWith(status: DiscoveryStatus.loading));
     try {
-      final assets = await _repository.getMarketAssets();
+      final assets = await _getMarketAssets.execute();
       emit(state.copyWith(
         status: DiscoveryStatus.success,
         assets: assets,
         filteredAssets: assets,
       ));
-    } catch (_) {
+    } catch (e) {
+      debugPrint(e.toString());
       emit(state.copyWith(status: DiscoveryStatus.failure));
     }
   }

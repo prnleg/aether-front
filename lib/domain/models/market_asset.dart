@@ -1,12 +1,11 @@
-import 'package:flutter/widgets.dart';
+import 'package:equatable/equatable.dart';
 
-class MarketAsset {
+class MarketAsset extends Equatable {
   final String name;
   final String type;
   final String health;
   final double price;
   final double change;
-  final IconData icon;
 
   const MarketAsset({
     required this.name,
@@ -14,6 +13,8 @@ class MarketAsset {
     required this.health,
     required this.price,
     required this.change,
-    required this.icon,
   });
+
+  @override
+  List<Object?> get props => [name, type, health, price, change];
 }

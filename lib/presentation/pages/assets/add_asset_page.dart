@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import '../../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../../logic/blocs/dashboard/dashboard_event.dart';
@@ -224,7 +225,7 @@ class _AddAssetPageState extends State<AddAssetPage> {
             type: _selectedType,
             initialValue: double.parse(_valueController.text),
           ));
-      Navigator.pop(context);
+      context.pop();
     }
   }
 }

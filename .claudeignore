@@ -1,0 +1,37 @@
+# Environment & Configuration
+.env
+.env.local
+.env.*.local
+.env.production.local
+appsettings.json
+appsettings.*.json
+appsettings.Development.json
+appsettings.Production.json
+config.json
+config.*.json
+
+# Secrets & Keys
+*.key
+*.pem
+*.pfx
+*.p12
+.ssh/
+secrets/
+.credentials
+.aws/credentials
+
+# Databases
+*.db
+*.sqlite
+*.sql
+.dbdata/
+
+# API Keys & Tokens
+.token
+.api_key
+.apikey
+
+# Other sensitive
+.vault/
+.secrets/
+private_keys/

@@ -97,6 +97,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get emailAddress => 'Endereço de E-mail';
 
   @override
+  String get password => 'Senha';
+
+  @override
   String get saveChanges => 'Salvar Alterações';
 
   @override
@@ -272,4 +275,105 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get diversified => 'Bem Diversificado';
+
+  @override
+  String get failedToLoadAssets => 'Falha ao carregar ativos.';
+
+  @override
+  String get add => 'Adicionar';
+
+  @override
+  String get bullish => 'Em alta';
+
+  @override
+  String get stable => 'Estável';
+
+  @override
+  String get volatile => 'Volátil';
+
+  @override
+  String get csgoSkin => 'Skin de CS:GO';
+
+  @override
+  String get crypto => 'Cripto';
+
+  @override
+  String get nft => 'NFT';
+
+  @override
+  String get stock => 'Ação';
+
+  @override
+  String get inventory => 'Inventário';
+
+  @override
+  String get collectible => 'Colecionável';
+
+  @override
+  String get cash => 'Dinheiro';
+
+  @override
+  String get unifiedAssets => 'Seus ativos, unificados.';
+
+  @override
+  String get forgotPassword => 'Esqueceu a senha?';
+
+  @override
+  String get noAccount => 'Não tem uma conta?';
+
+  @override
+  String get passwordsDoNotMatch => 'As senhas não coincidem.';
+
+  @override
+  String get createAccount => 'Criar Conta';
+
+  @override
+  String get financialJourney => 'Comece sua jornada financeira.';
+
+  @override
+  String get confirmPassword => 'Confirmar Senha';
+
+  @override
+  String get alreadyHaveAccount => 'Já tem uma conta?';
+
+  @override
+  String get login => 'Entrar';
+
+  @override
+  String get register => 'Cadastrar';
+
+  @override
+  String get highConcentrationRisk => 'Risco de Alta Concentração';
+
+  @override
+  String get deepDiveAnalysis => 'Análise Profunda';
+
+  @override
+  String get volatilityIndex => 'Índice de Volatilidade';
+
+  @override
+  String get high => 'Alta';
+
+  @override
+  String get medium => 'Média';
+
+  @override
+  String get low => 'Baixa';
+
+  @override
+  String get correlations => 'Correlações';
+
+  @override
+  String get noCorrelations => 'Nenhuma correlação disponível';
+
+  @override
+  String get historicalJourney => 'Jornada Histórica';
+
+  @override
+  String get noMilestones => 'Nenhum marco histórico disponível';
+
+  @override
+  String sellHypothetical(Object amount) {
+    return 'E se você vendesse aqui? $amount extra';
+  }
 }

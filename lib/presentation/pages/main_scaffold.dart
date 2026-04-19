@@ -5,20 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../logic/blocs/dashboard/dashboard_event.dart';
 import '../../service_locator.dart';
+import '../router/app_router.dart';
 
 class MainScaffold extends StatelessWidget {
   final Widget child;
   const MainScaffold({super.key, required this.child});
-
-  int _getSelectedIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/dashboard')) return 0;
-    if (location.startsWith('/assets')) return 1;
-    if (location.startsWith('/playground')) return 2;
-    if (location.startsWith('/account')) return 3;
-    if (location.startsWith('/settings')) return 4;
-    return 0;
-  }
 
   void _onDestinationSelected(BuildContext context, int index) {
     switch (index) {
@@ -44,70 +35,68 @@ class MainScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isWide = MediaQuery.of(context).size.width > 800;
     final l10n = AppLocalizations.of(context)!;
-    final int selectedIndex = _getSelectedIndex(context);
+    final int selectedIndex = AppRouter.getSelectedIndex(GoRouterState.of(context).matchedLocation);
     final bool isMacOS = Theme.of(context).platform == TargetPlatform.macOS;
 
     return BlocProvider(
       create: (context) => sl<DashboardBloc>()..add(DashboardStarted()),
       child: Scaffold(
-        body: SafeArea(
-          top: true,
-          bottom: false,
-          minimum: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
+        body: Padding(
+          padding: EdgeInsets.only(top: isMacOS ? 30.0 : 0.0),
           child: Row(
             children: [
               if (isWide)
-                SizedBox(
-                  width: 110,
-                  child: NavigationRail(
-                    selectedIndex: selectedIndex,
-                    onDestinationSelected: (index) =>
-                        _onDestinationSelected(context, index),
-                    labelType: NavigationRailLabelType.all,
-                    leading: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        height: 40,
-                        width: 40,
-                        color: const Color(0xFF2E3192), // Keep the same brand color
+                SafeArea(
+                  top: true,
+                  bottom: true,
+                  child: SizedBox(
+                    width: 110,
+                    child: NavigationRail(
+                      selectedIndex: selectedIndex,
+                      onDestinationSelected: (index) =>
+                          _onDestinationSelected(context, index),
+                      labelType: NavigationRailLabelType.all,
+                      leading: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          height: 40,
+                          width: 40,
+                          color: const Color(0xFF2E3192),
+                        ),
                       ),
+                      destinations: [
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.dashboard_outlined),
+                          selectedIcon: const Icon(Icons.dashboard),
+                          label: Text(l10n.dashboard),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.account_balance_wallet_outlined),
+                          selectedIcon: const Icon(Icons.account_balance_wallet),
+                          label: Text(l10n.assets),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.science_outlined),
+                          selectedIcon: const Icon(Icons.science),
+                          label: Text(l10n.playground),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.person_outline),
+                          selectedIcon: const Icon(Icons.person),
+                          label: Text(l10n.account),
+                        ),
+                        NavigationRailDestination(
+                          icon: const Icon(Icons.settings_outlined),
+                          selectedIcon: const Icon(Icons.settings),
+                          label: Text(l10n.settings),
+                        ),
+                      ],
                     ),
-                    destinations: [
-                      NavigationRailDestination(
-                        icon: const Icon(Icons.dashboard_outlined),
-                        selectedIcon: const Icon(Icons.dashboard),
-                        label: Text(l10n.dashboard),
-                      ),
-                      NavigationRailDestination(
-                        icon: const Icon(Icons.account_balance_wallet_outlined),
-                        selectedIcon: const Icon(Icons.account_balance_wallet),
-                        label: Text(l10n.assets),
-                      ),
-                      NavigationRailDestination(
-                        icon: const Icon(Icons.science_outlined),
-                        selectedIcon: const Icon(Icons.science),
-                        label: Text(l10n.playground),
-                      ),
-                      NavigationRailDestination(
-                        icon: const Icon(Icons.person_outline),
-                        selectedIcon: const Icon(Icons.person),
-                        label: Text(l10n.account),
-                      ),
-                      NavigationRailDestination(
-                        icon: const Icon(Icons.settings_outlined),
-                        selectedIcon: const Icon(Icons.settings),
-                        label: Text(l10n.settings),
-                      ),
-                    ],
                   ),
                 ),
               Expanded(
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: child,
-                ),
+                child: child,
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:aether/l10n/app_localizations.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
 import '../../../logic/blocs/auth/auth_state.dart';
@@ -36,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final bool isMacOS = theme.platform == TargetPlatform.macOS;
+    final l10n = AppLocalizations.of(context)!;
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -71,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
                       'assets/images/logo.png',
                       height: 80,
                       width: 80,
-                      // color: colorScheme.primary, // Optional: keep primary color if logo is monochromatic
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -82,15 +83,15 @@ class _LoginPageState extends State<LoginPage> {
                         color: colorScheme.primary,
                       ),
                     ),
-                    const Text(
-                      'Your assets, unified.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    Text(
+                      l10n.unifiedAssets,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 48),
                     _buildTextField(
                       context: context,
                       controller: _emailController,
-                      label: 'Email Address',
+                      label: l10n.emailAddress,
                       icon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -98,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                     _buildTextField(
                       context: context,
                       controller: _passwordController,
-                      label: 'Password',
+                      label: l10n.password,
                       icon: Icons.lock_outline,
                       isPassword: true,
                     ),
@@ -107,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {},
-                        child: const Text('Forgot Password?'),
+                        child: Text(l10n.forgotPassword),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -135,11 +136,12 @@ class _LoginPageState extends State<LoginPage> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text(
-                                    'Login',
-                                    style: TextStyle(
+                                : Text(
+                                    l10n.login,
+                                    style: const TextStyle(
                                         fontSize: 18,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
                                   ),
                           ),
                         );
@@ -149,12 +151,12 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account?"),
+                        Text(l10n.noAccount),
                         TextButton(
                           onPressed: () => context.push('/register'),
-                          child: const Text(
-                            'Register',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          child: Text(
+                            l10n.register,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:aether/l10n/app_localizations.dart';
 import '../../../logic/blocs/dashboard/dashboard_bloc.dart';
 import '../../../logic/blocs/dashboard/dashboard_state.dart';
-import '../../../logic/blocs/discovery/discovery_bloc.dart';
-import '../../../service_locator.dart';
 import '../../../domain/models/asset_model.dart';
 import '../../widgets/asset_detail_modal.dart';
-import '../assets/add_asset_page.dart';
-import 'discovery_hub_page.dart';
+import '../../widgets/skeleton_loader.dart';
+import '../../utils/asset_type_labels.dart';
 
 class AssetsPage extends StatefulWidget {
   const AssetsPage({super.key});
@@ -40,15 +40,7 @@ class _AssetsPageState extends State<AssetsPage> {
           IconButton(
             icon: const Icon(Icons.explore_outlined),
             tooltip: 'Discovery Hub',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) => sl<DiscoveryBloc>(),
-                  child: const DiscoveryHubPage(),
-                ),
-              ),
-            ),
+            onPressed: () => context.push('/assets/discovery'),
           ),
           const SizedBox(width: 8),
         ],
@@ -56,7 +48,7 @@ class _AssetsPageState extends State<AssetsPage> {
       body: BlocBuilder<DashboardBloc, DashboardState>(
         builder: (context, state) {
           if (state is DashboardLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const AssetsSkeleton();
           } else if (state is DashboardLoaded) {
             final filteredAssets = state.assets.where((asset) {
               final matchesSearch =
@@ -214,10 +206,10 @@ class _AssetsPageState extends State<AssetsPage> {
 
   Widget _buildAddAssetCard(BuildContext context, String label) {
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const AddAssetPage()),
-      ),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        context.push('/assets/add');
+      },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -267,16 +259,22 @@ class _AssetsPageState extends State<AssetsPage> {
         ],
       ),
       child: ListTile(
-        onTap: () => AssetDetailModal.show(context, asset),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          AssetDetailModal.show(context, asset);
+        },
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isDarkMode ? Colors.white10 : const Color(0xFFF5F7FA),
-            borderRadius: BorderRadius.circular(12),
+        leading: Hero(
+          tag: 'asset_icon_${asset.id}',
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.white10 : const Color(0xFFF5F7FA),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child:
+                Icon(_getIconForType(asset.type), color: const Color(0xFF2E3192)),
           ),
-          child:
-              Icon(_getIconForType(asset.type), color: const Color(0xFF2E3192)),
         ),
         title: Text(
           asset.name,
@@ -285,7 +283,7 @@ class _AssetsPageState extends State<AssetsPage> {
             color: isDarkMode ? Colors.white : Colors.black87,
           ),
         ),
-        subtitle: Text(asset.typeName),
+        subtitle: Text(assetTypeLabel(asset.type, AppLocalizations.of(context)!)),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,

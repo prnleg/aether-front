@@ -272,6 +272,12 @@ abstract class AppLocalizations {
   /// **'Email Address'**
   String get emailAddress;
 
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
   /// No description provided for @saveChanges.
   ///
   /// In en, this message translates to:
@@ -613,6 +619,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Well Diversified'**
   String get diversified;
+
+  /// No description provided for @failedToLoadAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load assets.'**
+  String get failedToLoadAssets;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @bullish.
+  ///
+  /// In en, this message translates to:
+  /// **'Bullish'**
+  String get bullish;
+
+  /// No description provided for @stable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable'**
+  String get stable;
+
+  /// No description provided for @volatile.
+  ///
+  /// In en, this message translates to:
+  /// **'Volatile'**
+  String get volatile;
+
+  /// No description provided for @csgoSkin.
+  ///
+  /// In en, this message translates to:
+  /// **'CS:GO Skin'**
+  String get csgoSkin;
+
+  /// No description provided for @crypto.
+  ///
+  /// In en, this message translates to:
+  /// **'Crypto'**
+  String get crypto;
+
+  /// No description provided for @nft.
+  ///
+  /// In en, this message translates to:
+  /// **'NFT'**
+  String get nft;
+
+  /// No description provided for @stock.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock'**
+  String get stock;
+
+  /// No description provided for @inventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get inventory;
+
+  /// No description provided for @collectible.
+  ///
+  /// In en, this message translates to:
+  /// **'Collectible'**
+  String get collectible;
+
+  /// No description provided for @cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cash;
+
+  /// No description provided for @unifiedAssets.
+  ///
+  /// In en, this message translates to:
+  /// **'Your assets, unified.'**
+  String get unifiedAssets;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get noAccount;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @financialJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your financial journey.'**
+  String get financialJourney;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
+  /// No description provided for @highConcentrationRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'High Concentration Risk'**
+  String get highConcentrationRisk;
+
+  /// No description provided for @deepDiveAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Dive Analysis'**
+  String get deepDiveAnalysis;
+
+  /// No description provided for @volatilityIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Volatility Index'**
+  String get volatilityIndex;
+
+  /// No description provided for @high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get high;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @correlations.
+  ///
+  /// In en, this message translates to:
+  /// **'Correlations'**
+  String get correlations;
+
+  /// No description provided for @noCorrelations.
+  ///
+  /// In en, this message translates to:
+  /// **'No correlations available'**
+  String get noCorrelations;
+
+  /// No description provided for @historicalJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Historical Journey'**
+  String get historicalJourney;
+
+  /// No description provided for @noMilestones.
+  ///
+  /// In en, this message translates to:
+  /// **'No historical milestones available'**
+  String get noMilestones;
+
+  /// No description provided for @sellHypothetical.
+  ///
+  /// In en, this message translates to:
+  /// **'What if you sold here? {amount} extra'**
+  String sellHypothetical(Object amount);
 }
 
 class _AppLocalizationsDelegate

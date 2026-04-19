@@ -1,33 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:aether/l10n/app_localizations.dart';
+import '../../../core/services/biometric_service.dart';
 import '../../../logic/blocs/settings/settings_bloc.dart';
 import '../../../logic/blocs/settings/settings_event.dart';
 import '../../../logic/blocs/settings/settings_state.dart';
 import '../../../logic/blocs/account/account_bloc.dart';
 import '../../../logic/blocs/account/account_state.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../service_locator.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
+  Future<void> _toggleBiometrics(
+    BuildContext context,
+    bool value,
+    AppLocalizations l10n,
+  ) async {
+    final biometricService = sl<BiometricService>();
+    final available = await biometricService.isAvailable();
 
-class _SettingsPageState extends State<SettingsPage> {
-  final LocalAuthentication auth = LocalAuthentication();
-  bool _biometricsEnabled = false;
-
-  Future<void> _toggleBiometrics(bool value) async {
-    final l10n = AppLocalizations.of(context)!;
-    final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
-    final bool canAuthenticate =
-        canAuthenticateWithBiometrics || await auth.isDeviceSupported();
-
-    if (!canAuthenticate) {
-      if (mounted) {
+    if (!available) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.biometricsNotAvailable)),
         );
@@ -36,22 +32,15 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     if (value) {
-      try {
-        final bool didAuthenticate = await auth.authenticate(
-          localizedReason: l10n.biometricReason,
-          options: const AuthenticationOptions(
-            stickyAuth: true,
-            biometricOnly: true,
-          ),
-        );
-        if (didAuthenticate) {
-          setState(() => _biometricsEnabled = true);
-        }
-      } catch (e) {
-        debugPrint(e.toString());
+      final authenticated =
+          await biometricService.authenticate(l10n.biometricReason);
+      if (authenticated && context.mounted) {
+        context.read<SettingsBloc>().add(const BiometricToggled(true));
       }
     } else {
-      setState(() => _biometricsEnabled = false);
+      if (context.mounted) {
+        context.read<SettingsBloc>().add(const BiometricToggled(false));
+      }
     }
   }
 
@@ -67,93 +56,105 @@ class _SettingsPageState extends State<SettingsPage> {
             style: const TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _buildVaultHeader(isDark, l10n),
-          const SizedBox(height: 30),
-          _buildSectionHeader(l10n.securitySection),
-          _buildSettingsTile(
-            title: l10n.biometricLock,
-            subtitle: l10n.biometricSubtitle,
-            icon: Icons.fingerprint,
-            trailing: Switch.adaptive(
-              value: _biometricsEnabled,
-              onChanged: _toggleBiometrics,
-              activeThumbColor: const Color(0xFF2E3192),
-            ),
-          ),
-          _buildSettingsTile(
-            title: l10n.twoFactorAuth,
-            subtitle: l10n.twoFactorSubtitle,
-            icon: Icons.security,
-            onTap: () {},
-          ),
-          const SizedBox(height: 24),
-          _buildSectionHeader(l10n.preferencesSection),
-          BlocBuilder<SettingsBloc, SettingsState>(
-            builder: (context, state) {
-              String subtitle;
-              switch (state.locale.languageCode) {
-                case 'en':
-                  subtitle = 'USD (\$)';
-                  break;
-                case 'pt':
-                  subtitle = 'BRL (R\$)';
-                  break;
-                default:
-                  subtitle = state.locale.languageCode.toUpperCase();
-              }
-
-              return _buildSettingsTile(
+      body: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, settingsState) {
+          return ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              _buildVaultHeader(isDark, l10n),
+              const SizedBox(height: 30),
+              _buildSectionHeader(l10n.securitySection),
+              _buildSettingsTile(
+                context,
+                title: l10n.biometricLock,
+                subtitle: l10n.biometricSubtitle,
+                icon: Icons.fingerprint,
+                trailing: Switch.adaptive(
+                  value: settingsState.biometricsEnabled,
+                  onChanged: (value) =>
+                      _toggleBiometrics(context, value, l10n),
+                  activeThumbColor: const Color(0xFF2E3192),
+                ),
+              ),
+              _buildSettingsTile(
+                context,
+                title: l10n.twoFactorAuth,
+                subtitle: l10n.twoFactorSubtitle,
+                icon: Icons.security,
+                onTap: () {},
+              ),
+              const SizedBox(height: 24),
+              _buildSectionHeader(l10n.preferencesSection),
+              _buildSettingsTile(
+                context,
                 title: l10n.primaryCurrency,
-                subtitle: subtitle,
+                subtitle: _currencySubtitle(settingsState.locale),
                 icon: Icons.payments_outlined,
                 onTap: () => _showCurrencyPicker(context, l10n),
-              );
-            },
-          ),
-          _buildSettingsTile(
-            title: l10n.appearance,
-            subtitle: isDark ? l10n.darkMode : l10n.lightMode,
-            icon: isDark ? Icons.dark_mode : Icons.light_mode,
-            onTap: () => context.read<SettingsBloc>().add(ToggleTheme()),
-          ),
-          const SizedBox(height: 24),
-          _buildSectionHeader(l10n.apiConnections),
-          BlocBuilder<AccountBloc, AccountState>(
-            builder: (context, accountState) {
-              String userName = 'User';
-              if (accountState is AccountLoaded) {
-                userName = accountState.user.name;
-              }
-              return _buildSettingsTile(
-                title: l10n.steamInventoryApi,
-                subtitle: l10n.connectedAs(userName),
-                icon: FontAwesomeIcons.steam,
-                onTap: () {},
-              );
-            }
-          ),
-          _buildSettingsTile(
-            title: l10n.exchangeApiKeys,
-            subtitle: l10n.exchangeApiSubtitle,
-            icon: Icons.api,
-            onTap: () {},
-          ),
-          const SizedBox(height: 40),
-          Center(
-            child: TextButton(
-              onPressed: () {},
-              child: Text(
-                l10n.deleteAccount,
-                style: const TextStyle(color: Colors.red),
               ),
-            ),
-          ),
-        ],
+              _buildSettingsTile(
+                context,
+                title: l10n.appearance,
+                subtitle: isDark ? l10n.darkMode : l10n.lightMode,
+                icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                trailing: Switch.adaptive(
+                  value: isDark,
+                  onChanged: (_) {
+                    HapticFeedback.lightImpact();
+                    context.read<SettingsBloc>().add(ToggleTheme());
+                  },
+                  activeThumbColor: const Color(0xFF2E3192),
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildSectionHeader(l10n.apiConnections),
+              BlocBuilder<AccountBloc, AccountState>(
+                builder: (context, accountState) {
+                  final userName = accountState is AccountLoaded
+                      ? accountState.user.name
+                      : 'User';
+                  return _buildSettingsTile(
+                    context,
+                    title: l10n.steamInventoryApi,
+                    subtitle: l10n.connectedAs(userName),
+                    icon: FontAwesomeIcons.steam,
+                    onTap: () => HapticFeedback.lightImpact(),
+                  );
+                },
+              ),
+              _buildSettingsTile(
+                context,
+                title: l10n.exchangeApiKeys,
+                subtitle: l10n.exchangeApiSubtitle,
+                icon: Icons.api,
+                onTap: () => HapticFeedback.lightImpact(),
+              ),
+              const SizedBox(height: 40),
+              Center(
+                child: TextButton(
+                  onPressed: () => HapticFeedback.lightImpact(),
+                  child: Text(
+                    l10n.deleteAccount,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
+  }
+
+  String _currencySubtitle(Locale locale) {
+    switch (locale.languageCode) {
+      case 'en':
+        return 'USD (\$)';
+      case 'pt':
+        return 'BRL (R\$)';
+      default:
+        return locale.languageCode.toUpperCase();
+    }
   }
 
   Widget _buildVaultHeader(bool isDark, AppLocalizations l10n) {
@@ -212,7 +213,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSettingsTile({
+  Widget _buildSettingsTile(
+    BuildContext context, {
     required String title,
     required String subtitle,
     required IconData icon,
@@ -252,10 +254,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              _buildCurrencyItem('USD', l10n.usdName, '\$'),
-              _buildCurrencyItem('BRL', l10n.brlName, 'R\$'),
-              _buildCurrencyItem('EUR', l10n.eurName, '€'),
-              _buildCurrencyItem('BTC', l10n.btcName, '₿'),
+              _buildCurrencyItem('USD', l10n.usdName, '\$', onTap: () {
+                HapticFeedback.lightImpact();
+                context
+                    .read<SettingsBloc>()
+                    .add(const ChangeLanguage(Locale('en')));
+                Navigator.pop(context);
+              }),
+              _buildCurrencyItem('BRL', l10n.brlName, 'R\$', onTap: () {
+                HapticFeedback.lightImpact();
+                context
+                    .read<SettingsBloc>()
+                    .add(const ChangeLanguage(Locale('pt')));
+                Navigator.pop(context);
+              }),
+              _buildCurrencyItem('EUR', l10n.eurName, '€', onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.pop(context);
+              }),
+              _buildCurrencyItem('BTC', l10n.btcName, '₿', onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.pop(context);
+              }),
             ],
           ),
         );
@@ -263,7 +283,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildCurrencyItem(String code, String name, String symbol) {
+  Widget _buildCurrencyItem(String code, String name, String symbol,
+      {VoidCallback? onTap}) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: const Color(0xFF2E3192).withValues(alpha: 0.1),
@@ -271,20 +292,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       title: Text(code, style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text(name),
-      onTap: () => Navigator.pop(context),
+      onTap: onTap,
     );
   }
-}
-
-ListTile ldCurrencyItem(String code, String name, String symbol,
-    {VoidCallback? onTap}) {
-  return ListTile(
-    leading: CircleAvatar(
-      backgroundColor: const Color(0xFF2E3192).withValues(alpha: 0.1),
-      child: Text(symbol, style: const TextStyle(color: Color(0xFF2E3192))),
-    ),
-    title: Text(code, style: const TextStyle(fontWeight: FontWeight.bold)),
-    subtitle: Text(name),
-    onTap: onTap,
-  );
 }
