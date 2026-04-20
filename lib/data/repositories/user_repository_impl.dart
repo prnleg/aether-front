@@ -38,4 +38,9 @@ class UserRepositoryImpl implements UserRepository {
     await _tokenStorage.writeName(user.name);
     await _tokenStorage.writeEmail(user.email);
   }
+
+  @override
+  Future<void> updateSteamId(String steamId) async {
+    await _api.patch('/api/users/me/steam-id', data: {'steamId': steamId});
+  }
 }

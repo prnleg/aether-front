@@ -18,3 +18,12 @@ class UpdateProfile extends AccountEvent {
   @override
   List<Object> get props => [name ?? '', email ?? ''];
 }
+
+class UpdateSteamId extends AccountEvent {
+  final String steamId;
+
+  const UpdateSteamId(this.steamId);
+
+  @override
+  List<Object> get props => [steamId];
+}

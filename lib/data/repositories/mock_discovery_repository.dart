@@ -1,41 +1,25 @@
-import '../../domain/models/market_asset.dart';
+// Kept for reference only — no longer registered in service_locator.dart.
+// Implements the DiscoveryRepository interface with empty stubs.
+import '../../domain/models/discovery_item.dart';
+import '../../domain/models/sync_result.dart';
 import '../../domain/repositories/discovery_repository.dart';
 
 class MockDiscoveryRepository implements DiscoveryRepository {
-  final List<MarketAsset> _mockMarketAssets = const [
-    MarketAsset(
-      name: 'Factory New Dragon Lore',
-      type: 'CS:GO Skin',
-      health: 'Bullish',
-      price: 12500.00,
-      change: 2.4,
-    ),
-    MarketAsset(
-      name: 'Ethereum',
-      type: 'Crypto',
-      health: 'Stable',
-      price: 2450.50,
-      change: -0.5,
-    ),
-    MarketAsset(
-      name: 'Bored Ape Yacht Club #451',
-      type: 'NFT',
-      health: 'Volatile',
-      price: 65200.00,
-      change: -12.4,
-    ),
-    MarketAsset(
-      name: 'Tesla Inc.',
-      type: 'Stock',
-      health: 'Bullish',
-      price: 242.10,
-      change: 1.2,
-    ),
-  ];
+  @override
+  Future<List<DiscoveryItem>> getDiscoveryItems({
+    String? status,
+    int page = 1,
+    int pageSize = 20,
+  }) async =>
+      [];
 
   @override
-  Future<List<MarketAsset>> getMarketAssets() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return _mockMarketAssets;
-  }
+  Future<SyncResult> syncSteamInventory(List<String> appIds) async =>
+      const SyncResult(added: 0, updated: 0, skipped: 0);
+
+  @override
+  Future<void> approveDiscoveryItem(String id) async {}
+
+  @override
+  Future<void> rejectDiscoveryItem(String id) async {}
 }

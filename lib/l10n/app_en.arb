@@ -120,5 +120,52 @@
   "noCorrelations": "No correlations available",
   "historicalJourney": "Historical Journey",
   "noMilestones": "No historical milestones available",
-  "sellHypothetical": "What if you sold here? {amount} extra"
+  "sellHypothetical": "What if you sold here? {amount} extra",
+  "pendingReview": "Pending",
+  "available": "Available",
+  "inPortfolio": "In Portfolio",
+  "rejected": "Rejected",
+  "approve": "Approve",
+  "reject": "Reject",
+  "syncInventory": "Sync Inventory",
+  "syncSteamInventory": "Sync Steam Inventory",
+  "syncWarning": "This may take a while (up to 2 minutes for large inventories).",
+  "syncResult": "Added {added}, Updated {updated}, Skipped {skipped}",
+  "@syncResult": {
+    "placeholders": {
+      "added": { "type": "int" },
+      "updated": { "type": "int" },
+      "skipped": { "type": "int" }
+    }
+  },
+  "selectGame": "Select Game",
+  "cs2": "CS2 (Counter-Strike 2)",
+  "dota2": "Dota 2",
+  "customAppId": "Custom App ID",
+  "enterAppId": "Enter App ID",
+  "steamId": "Steam ID",
+  "setSteamId": "Set Steam ID",
+  "steamIdSubtitle": "Your SteamID64 (e.g. 76561198...)",
+  "steamIdHint": "76561198...",
+  "steamIdHelper": "Find your SteamID64 at steamid.io",
+  "noDiscoveryItems": "No items found for this filter.",
+  "syncFailed": "Sync failed. Please try again.",
+  "actionFailed": "Action failed. Please try again.",
+  "rejectCheapItems": "Reject Cheap Items",
+  "rejectBelowPrice": "Reject all items below this price",
+  "priceThreshold": "Max Price",
+  "rejectCountConfirm": "Reject {count} item(s)",
+  "@rejectCountConfirm": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noCheapItems": "No items below that price.",
+  "bulkRejected": "Bulk rejection done.",
+  "sortByPrice": "Sort by Price",
+  "sortBy": "Sort By",
+  "valueHighToLow": "Value: High → Low",
+  "valueLowToHigh": "Value: Low → High",
+  "nameAZ": "Name: A → Z",
+  "change24hDesc": "24h Change: High → Low"
 }

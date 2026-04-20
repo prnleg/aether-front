@@ -34,6 +34,22 @@ class ApiClient {
     }
   }
 
+  Future<Response> postWithTimeout(
+    String path, {
+    dynamic data,
+    required Duration receiveTimeout,
+  }) async {
+    try {
+      return await _dio.post(
+        path,
+        data: data,
+        options: Options(receiveTimeout: receiveTimeout),
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<Response> patch(String path, {dynamic data}) async {
     try {
       return await _dio.patch(path, data: data);

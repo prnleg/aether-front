@@ -829,6 +829,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What if you sold here? {amount} extra'**
   String sellHypothetical(Object amount);
+
+  /// No description provided for @pendingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingReview;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @inPortfolio.
+  ///
+  /// In en, this message translates to:
+  /// **'In Portfolio'**
+  String get inPortfolio;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @syncInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Inventory'**
+  String get syncInventory;
+
+  /// No description provided for @syncSteamInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Steam Inventory'**
+  String get syncSteamInventory;
+
+  /// No description provided for @syncWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This may take a while (up to 2 minutes for large inventories).'**
+  String get syncWarning;
+
+  /// No description provided for @syncResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {added}, Updated {updated}, Skipped {skipped}'**
+  String syncResult(int added, int updated, int skipped);
+
+  /// No description provided for @selectGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Game'**
+  String get selectGame;
+
+  /// No description provided for @cs2.
+  ///
+  /// In en, this message translates to:
+  /// **'CS2 (Counter-Strike 2)'**
+  String get cs2;
+
+  /// No description provided for @dota2.
+  ///
+  /// In en, this message translates to:
+  /// **'Dota 2'**
+  String get dota2;
+
+  /// No description provided for @customAppId.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom App ID'**
+  String get customAppId;
+
+  /// No description provided for @enterAppId.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter App ID'**
+  String get enterAppId;
+
+  /// No description provided for @steamId.
+  ///
+  /// In en, this message translates to:
+  /// **'Steam ID'**
+  String get steamId;
+
+  /// No description provided for @setSteamId.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Steam ID'**
+  String get setSteamId;
+
+  /// No description provided for @steamIdSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your SteamID64 (e.g. 76561198...)'**
+  String get steamIdSubtitle;
+
+  /// No description provided for @steamIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'76561198...'**
+  String get steamIdHint;
+
+  /// No description provided for @steamIdHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your SteamID64 at steamid.io'**
+  String get steamIdHelper;
+
+  /// No description provided for @noDiscoveryItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found for this filter.'**
+  String get noDiscoveryItems;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed. Please try again.'**
+  String get syncFailed;
+
+  /// No description provided for @actionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Action failed. Please try again.'**
+  String get actionFailed;
+
+  /// No description provided for @rejectCheapItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Cheap Items'**
+  String get rejectCheapItems;
+
+  /// No description provided for @rejectBelowPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject all items below this price'**
+  String get rejectBelowPrice;
+
+  /// No description provided for @priceThreshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Price'**
+  String get priceThreshold;
+
+  /// No description provided for @rejectCountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject {count} item(s)'**
+  String rejectCountConfirm(int count);
+
+  /// No description provided for @noCheapItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No items below that price.'**
+  String get noCheapItems;
+
+  /// No description provided for @bulkRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk rejection done.'**
+  String get bulkRejected;
+
+  /// No description provided for @sortByPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Price'**
+  String get sortByPrice;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get sortBy;
+
+  /// No description provided for @valueHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Value: High → Low'**
+  String get valueHighToLow;
+
+  /// No description provided for @valueLowToHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Value: Low → High'**
+  String get valueLowToHigh;
+
+  /// No description provided for @nameAZ.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: A → Z'**
+  String get nameAZ;
+
+  /// No description provided for @change24hDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'24h Change: High → Low'**
+  String get change24hDesc;
 }
 
 class _AppLocalizationsDelegate

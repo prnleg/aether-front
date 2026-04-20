@@ -10,6 +10,8 @@ import '../../widgets/asset_detail_modal.dart';
 import '../../widgets/skeleton_loader.dart';
 import '../../utils/asset_type_labels.dart';
 
+enum _SortOrder { valueDesc, valueAsc, nameAz, changeDesc }
+
 class AssetsPage extends StatefulWidget {
   const AssetsPage({super.key});
 
@@ -21,6 +23,7 @@ class _AssetsPageState extends State<AssetsPage> {
   final TextEditingController _searchController = TextEditingController();
   AssetType? _selectedType;
   String _searchQuery = '';
+  _SortOrder _sortOrder = _SortOrder.valueDesc;
 
   @override
   void dispose() {
@@ -37,12 +40,28 @@ class _AssetsPageState extends State<AssetsPage> {
         title: Text(l10n.assets,
             style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
+          PopupMenuButton<_SortOrder>(
+            icon: const Icon(Icons.sort),
+            tooltip: 'Sort By',
+            initialValue: _sortOrder,
+            onSelected: (order) => setState(() => _sortOrder = order),
+            itemBuilder: (ctx) => [
+              _sortItem(_SortOrder.valueDesc, l10n.valueHighToLow,
+                  Icons.arrow_downward),
+              _sortItem(_SortOrder.valueAsc, l10n.valueLowToHigh,
+                  Icons.arrow_upward),
+              _sortItem(_SortOrder.nameAz, l10n.nameAZ,
+                  Icons.sort_by_alpha),
+              _sortItem(_SortOrder.changeDesc, l10n.change24hDesc,
+                  Icons.trending_up),
+            ],
+          ),
           IconButton(
             icon: const Icon(Icons.explore_outlined),
             tooltip: 'Discovery Hub',
             onPressed: () => context.push('/assets/discovery'),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
       ),
       body: BlocConsumer<DashboardBloc, DashboardState>(
@@ -66,7 +85,8 @@ class _AssetsPageState extends State<AssetsPage> {
               final matchesType =
                   _selectedType == null || asset.type == _selectedType;
               return matchesSearch && matchesType;
-            }).toList();
+            }).toList()
+              ..sort(_comparator);
 
             return Column(
               children: [
@@ -94,6 +114,46 @@ class _AssetsPageState extends State<AssetsPage> {
           }
           return _buildEmptyState(context, l10n);
         },
+      ),
+    );
+  }
+
+  int _comparator(Asset a, Asset b) {
+    switch (_sortOrder) {
+      case _SortOrder.valueDesc:
+        return b.value.compareTo(a.value);
+      case _SortOrder.valueAsc:
+        return a.value.compareTo(b.value);
+      case _SortOrder.nameAz:
+        return a.name.compareTo(b.name);
+      case _SortOrder.changeDesc:
+        return b.change24h.compareTo(a.change24h);
+    }
+  }
+
+  PopupMenuItem<_SortOrder> _sortItem(
+      _SortOrder value, String label, IconData icon) {
+    final selected = _sortOrder == value;
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon,
+              size: 18,
+              color: selected ? const Color(0xFF2E3192) : Colors.grey),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              color: selected ? const Color(0xFF2E3192) : null,
+              fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          if (selected) ...[
+            const Spacer(),
+            const Icon(Icons.check, size: 16, color: Color(0xFF2E3192)),
+          ],
+        ],
       ),
     );
   }

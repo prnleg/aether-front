@@ -120,5 +120,52 @@
   "noCorrelations": "Nenhuma correlação disponível",
   "historicalJourney": "Jornada Histórica",
   "noMilestones": "Nenhum marco histórico disponível",
-  "sellHypothetical": "E se você vendesse aqui? {amount} extra"
+  "sellHypothetical": "E se você vendesse aqui? {amount} extra",
+  "pendingReview": "Pendentes",
+  "available": "Disponível",
+  "inPortfolio": "No Portfólio",
+  "rejected": "Rejeitado",
+  "approve": "Aprovar",
+  "reject": "Rejeitar",
+  "syncInventory": "Sincronizar",
+  "syncSteamInventory": "Sincronizar Inventário Steam",
+  "syncWarning": "Isso pode levar um tempo (até 2 minutos para inventários grandes).",
+  "syncResult": "Adicionados {added}, Atualizados {updated}, Ignorados {skipped}",
+  "@syncResult": {
+    "placeholders": {
+      "added": { "type": "int" },
+      "updated": { "type": "int" },
+      "skipped": { "type": "int" }
+    }
+  },
+  "selectGame": "Selecionar Jogo",
+  "cs2": "CS2 (Counter-Strike 2)",
+  "dota2": "Dota 2",
+  "customAppId": "App ID Personalizado",
+  "enterAppId": "Insira o App ID",
+  "steamId": "Steam ID",
+  "setSteamId": "Definir Steam ID",
+  "steamIdSubtitle": "Seu SteamID64 (ex: 76561198...)",
+  "steamIdHint": "76561198...",
+  "steamIdHelper": "Encontre seu SteamID64 em steamid.io",
+  "noDiscoveryItems": "Nenhum item encontrado para este filtro.",
+  "syncFailed": "Falha na sincronização. Tente novamente.",
+  "actionFailed": "Ação falhou. Tente novamente.",
+  "rejectCheapItems": "Rejeitar Itens Baratos",
+  "rejectBelowPrice": "Rejeitar todos os itens abaixo deste preço",
+  "priceThreshold": "Preço Máximo",
+  "rejectCountConfirm": "Rejeitar {count} item(ns)",
+  "@rejectCountConfirm": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noCheapItems": "Nenhum item abaixo desse preço.",
+  "bulkRejected": "Rejeição em massa concluída.",
+  "sortByPrice": "Ordenar por Preço",
+  "sortBy": "Ordenar Por",
+  "valueHighToLow": "Valor: Maior → Menor",
+  "valueLowToHigh": "Valor: Menor → Maior",
+  "nameAZ": "Nome: A → Z",
+  "change24hDesc": "Variação 24h: Maior → Menor"
 }

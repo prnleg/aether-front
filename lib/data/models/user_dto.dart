@@ -5,12 +5,14 @@ class UserDto {
   final String name;
   final String email;
   final String profilePictureUrl;
+  final String? steamId;
 
   const UserDto({
     required this.id,
     required this.name,
     required this.email,
     this.profilePictureUrl = '',
+    this.steamId,
   });
 
   /// Handles both camelCase (Flutter convention) and PascalCase (.NET default).
@@ -20,6 +22,7 @@ class UserDto {
         email: (json['email'] ?? json['Email'] ?? '') as String,
         profilePictureUrl:
             (json['profilePictureUrl'] ?? json['ProfilePictureUrl'] ?? '') as String,
+        steamId: (json['steamId'] ?? json['SteamId']) as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -27,6 +30,7 @@ class UserDto {
         'name': name,
         'email': email,
         'profilePictureUrl': profilePictureUrl,
+        'steamId': steamId,
       };
 
   UserModel toDomain() => UserModel(
@@ -34,5 +38,6 @@ class UserDto {
         name: name,
         email: email,
         profilePictureUrl: profilePictureUrl,
+        steamId: steamId,
       );
 }

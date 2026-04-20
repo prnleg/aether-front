@@ -9,6 +9,7 @@ import '../../../logic/blocs/settings/settings_bloc.dart';
 import '../../../logic/blocs/settings/settings_event.dart';
 import '../../../logic/blocs/settings/settings_state.dart';
 import '../../../logic/blocs/account/account_bloc.dart';
+import '../../../logic/blocs/account/account_event.dart';
 import '../../../logic/blocs/account/account_state.dart';
 import '../../../logic/blocs/auth/auth_bloc.dart';
 import '../../../logic/blocs/auth/auth_event.dart';
@@ -125,15 +126,20 @@ class SettingsPage extends StatelessWidget {
               _buildSectionHeader(l10n.apiConnections),
               BlocBuilder<AccountBloc, AccountState>(
                 builder: (context, accountState) {
-                  final userName = accountState is AccountLoaded
-                      ? accountState.user.name
-                      : 'User';
+                  final steamId = accountState is AccountLoaded
+                      ? (accountState.user.steamId ?? '')
+                      : '';
                   return _buildSettingsTile(
                     context,
                     title: l10n.steamInventoryApi,
-                    subtitle: l10n.connectedAs(userName),
+                    subtitle: steamId.isNotEmpty
+                        ? l10n.connectedAs(steamId)
+                        : l10n.steamIdSubtitle,
                     icon: FontAwesomeIcons.steam,
-                    onTap: () => HapticFeedback.lightImpact(),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _showSteamIdSheet(context, l10n, steamId);
+                    },
                   );
                 },
               ),
@@ -369,6 +375,79 @@ class SettingsPage extends StatelessWidget {
                       .add(const ChangeLanguage(Locale('pt')));
                   Navigator.pop(ctx);
                 },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSteamIdSheet(
+      BuildContext context, AppLocalizations l10n, String currentSteamId) {
+    final controller = TextEditingController(text: currentSteamId);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.setSteamId,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.steamIdHelper,
+                style: const TextStyle(color: Colors.grey, fontSize: 13),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: l10n.steamId,
+                  hintText: l10n.steamIdHint,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2E3192),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () {
+                    final id = controller.text.trim();
+                    if (id.isEmpty) return;
+                    Navigator.pop(ctx);
+                    context.read<AccountBloc>().add(UpdateSteamId(id));
+                  },
+                  child: Text(l10n.saveChanges,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
               ),
             ],
           ),

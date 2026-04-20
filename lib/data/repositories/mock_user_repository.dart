@@ -12,6 +12,8 @@ class MockUserRepository implements UserRepository {
   }
 
   @override
-  Future<void> updateUser(UserModel user) async {
-  }
+  Future<void> updateUser(UserModel user) async {}
+
+  @override
+  Future<void> updateSteamId(String steamId) async {}
 }

@@ -381,4 +381,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String sellHypothetical(Object amount) {
     return 'What if you sold here? $amount extra';
   }
+
+  @override
+  String get pendingReview => 'Pending';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get inPortfolio => 'In Portfolio';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get syncInventory => 'Sync Inventory';
+
+  @override
+  String get syncSteamInventory => 'Sync Steam Inventory';
+
+  @override
+  String get syncWarning =>
+      'This may take a while (up to 2 minutes for large inventories).';
+
+  @override
+  String syncResult(int added, int updated, int skipped) {
+    return 'Added $added, Updated $updated, Skipped $skipped';
+  }
+
+  @override
+  String get selectGame => 'Select Game';
+
+  @override
+  String get cs2 => 'CS2 (Counter-Strike 2)';
+
+  @override
+  String get dota2 => 'Dota 2';
+
+  @override
+  String get customAppId => 'Custom App ID';
+
+  @override
+  String get enterAppId => 'Enter App ID';
+
+  @override
+  String get steamId => 'Steam ID';
+
+  @override
+  String get setSteamId => 'Set Steam ID';
+
+  @override
+  String get steamIdSubtitle => 'Your SteamID64 (e.g. 76561198...)';
+
+  @override
+  String get steamIdHint => '76561198...';
+
+  @override
+  String get steamIdHelper => 'Find your SteamID64 at steamid.io';
+
+  @override
+  String get noDiscoveryItems => 'No items found for this filter.';
+
+  @override
+  String get syncFailed => 'Sync failed. Please try again.';
+
+  @override
+  String get actionFailed => 'Action failed. Please try again.';
+
+  @override
+  String get rejectCheapItems => 'Reject Cheap Items';
+
+  @override
+  String get rejectBelowPrice => 'Reject all items below this price';
+
+  @override
+  String get priceThreshold => 'Max Price';
+
+  @override
+  String rejectCountConfirm(int count) {
+    return 'Reject $count item(s)';
+  }
+
+  @override
+  String get noCheapItems => 'No items below that price.';
+
+  @override
+  String get bulkRejected => 'Bulk rejection done.';
+
+  @override
+  String get sortByPrice => 'Sort by Price';
+
+  @override
+  String get sortBy => 'Sort By';
+
+  @override
+  String get valueHighToLow => 'Value: High → Low';
+
+  @override
+  String get valueLowToHigh => 'Value: Low → High';
+
+  @override
+  String get nameAZ => 'Name: A → Z';
+
+  @override
+  String get change24hDesc => '24h Change: High → Low';
 }
